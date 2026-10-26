@@ -1,121 +1,151 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const PetCareApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class PetCareApp extends StatelessWidget {
+  const PetCareApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: '펫케어 드라이브',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(colorSchemeSeed: const Color(0xFFD98A1E), useMaterial3: true),
+      home: const DashboardPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+// ponytail: 지금은 데모 데이터. Firebase 연결 후 vehicles/{carId}/status, events 구독으로 교체
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _DashboardPageState extends State<DashboardPage> {
+  bool barking = true;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void _sendVoice() {
+    setState(() => barking = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('차량에서 보호자 목소리를 재생했어요')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: const Color(0xFFF4F1EC),
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        backgroundColor: const Color(0xFFF4F1EC),
+        title: const Text('콩이 펫케어', style: TextStyle(fontWeight: FontWeight.bold)),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Chip(label: Text('대기 모드 25분째')),
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: barking
+                ? Card(
+                    key: const ValueKey('alert'),
+                    color: const Color(0xFFE0573B),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      leading: const Icon(Icons.campaign, color: Colors.white, size: 36),
+                      title: const Text('콩이가 3분째 짖고 있어요',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                      subtitle: const Text('차량이 2단계 진정을 진행 중이에요',
+                          style: TextStyle(color: Colors.white70)),
+                    ),
+                  )
+                : Card(
+                    key: const ValueKey('ok'),
+                    color: const Color(0xFF3E9B6A),
+                    child: const ListTile(
+                      contentPadding: EdgeInsets.all(16),
+                      leading: Icon(Icons.favorite, color: Colors.white, size: 36),
+                      title: Text('콩이가 진정했어요',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                      subtitle: Text('짖음 3회 · 1분 40초 만에 안정', style: TextStyle(color: Colors.white70)),
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 16),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.3,
+            children: const [
+              _Stat(icon: Icons.thermostat, label: '실내 온도', value: '23.0℃', note: '적정 범위'),
+              _Stat(icon: Icons.battery_charging_full, label: '배터리', value: '82%', note: '약 42시간 유지'),
+              _Stat(icon: Icons.lock, label: '도어', value: '잠김', note: '4개 문 모두'),
+              _Stat(icon: Icons.place, label: '위치', value: '안성휴게소', note: '하행선 주차장'),
+            ],
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: _sendVoice,
+            icon: const Icon(Icons.mic),
+            label: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14),
+              child: Text('목소리 들려주기', style: TextStyle(fontSize: 17)),
             ),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.call),
+            label: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14),
+              child: Text('차량과 통화하기', style: TextStyle(fontSize: 17)),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text('데모 데이터로 표시 중', textAlign: TextAlign.center, style: TextStyle(color: scheme.outline)),
+        ],
+      ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({required this.icon, required this.label, required this.value, required this.note});
+
+  final IconData icon;
+  final String label, value, note;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      elevation: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(children: [
+              Icon(icon, size: 20, color: Colors.black54),
+              const SizedBox(width: 6),
+              Text(label, style: const TextStyle(color: Colors.black54)),
+            ]),
+            Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(note, style: const TextStyle(color: Colors.black45, fontSize: 12)),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

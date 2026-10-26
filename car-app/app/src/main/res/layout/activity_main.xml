@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/calm_bg">
+
+    <!-- 상단: 단계 표시 + 짖음 감지 상태 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="40dp">
+
+        <TextView
+            android:id="@+id/stage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="펫케어 대기 모드"
+            android:textColor="@color/calm_sub"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/listenDot"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:background="@drawable/dot" />
+
+        <TextView
+            android:id="@+id/listen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="짖음 감지 중"
+            android:textColor="@color/calm_sub"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <!-- 가운데: 원 + 메인 문구 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="260dp"
+            android:layout_height="260dp">
+
+            <View
+                android:id="@+id/glow"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0"
+                android:background="@drawable/circle_glow" />
+
+            <TextView
+                android:id="@+id/face"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle_owner"
+                android:gravity="center"
+                android:text="콩이"
+                android:textColor="#FFFFFF"
+                android:textSize="64sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            android:text="콩이는 지금 안전하게 쉬고 있어요"
+            android:textColor="@color/calm_text"
+            android:textSize="44sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="보호자가 곧 돌아와요"
+            android:textColor="@color/calm_sub"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/banner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/banner"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="16dp"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- 하단: 실제 차량 데이터 (Vehicle SDK) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="40dp">
+
+        <TextView
+            android:id="@+id/temp"
+            style="@style/Chip"
+            android:text="실내 온도 --" />
+
+        <TextView
+            android:id="@+id/battery"
+            style="@style/Chip"
+            android:text="배터리 --" />
+
+        <TextView
+            android:id="@+id/hours"
+            style="@style/Chip"
+            android:text="펫케어 유지 --" />
+    </LinearLayout>
+</FrameLayout>
