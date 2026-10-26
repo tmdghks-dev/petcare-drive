@@ -7,3 +7,5 @@ build/
 # Firebase 설정 파일은 팀 내부에서만 공유
 google-services.json
 GoogleService-Info.plist
+docs/slack-upload/
+~$*

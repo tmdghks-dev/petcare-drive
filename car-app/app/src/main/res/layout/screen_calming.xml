@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical"
+    android:paddingHorizontal="72dp"
+    android:paddingVertical="56dp">
+
+    <include android:id="@+id/top" layout="@layout/part_top" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <include layout="@layout/part_photo" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="80dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/headline"
+                style="@style/Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/sub"
+                style="@style/Sub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <include android:id="@+id/actNotify" layout="@layout/item_action" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="32dp" />
+            <include android:id="@+id/actLight" layout="@layout/item_action" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" />
+            <include android:id="@+id/actMusic" layout="@layout/item_action" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="32dp">
+
+        <TextView
+            android:id="@+id/footnote"
+            style="@style/Footnote"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnMusic"
+            style="@style/BtnOutline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="음악 바꾸기" />
+
+        <Button
+            android:id="@+id/btnStopCalm"
+            style="@style/BtnPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="진정 모드 끄기" />
+    </LinearLayout>
+</LinearLayout>

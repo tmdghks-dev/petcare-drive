@@ -1,13 +1,13 @@
 <resources>
-    <color name="calm_bg">#F4F1EC</color>
-    <color name="calm_text">#2B2A28</color>
-    <color name="calm_sub">#6E6A63</color>
-    <color name="owner_bg">#FFF4DF</color>
-    <color name="owner_accent">#D98A1E</color>
-    <color name="night_bg">#14213D</color>
-    <color name="night_text">#E8ECF5</color>
-    <color name="night_glow">#5B7FD6</color>
-    <color name="chip_bg">#FFFFFF</color>
-    <color name="alert">#E0573B</color>
-    <color name="ok">#3E9B6A</color>
+    <!-- 디자인 시안과 같은 토큰. 화면마다 색을 새로 만들지 말고 여기 것만 쓴다 -->
+    <color name="bg">#F2F7FB</color>
+    <color name="card">#FFFFFF</color>
+    <color name="ink">#0E2A47</color>
+    <color name="muted">#51667C</color>
+    <color name="primary">#0B75B3</color>
+    <color name="accent">#00AAD2</color>
+    <color name="tint">#E1F3FA</color>
+    <color name="tint_strong">#BFE6F4</color>
+    <color name="line">#D8E6F0</color>
+    <color name="dashed">#A9C7DB</color>
 </resources>

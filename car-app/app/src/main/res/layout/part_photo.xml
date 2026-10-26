@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 모든 화면 공통: 동그란 반려견 사진 + 연한 파랑 테두리 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ring"
+    android:layout_width="440dp"
+    android:layout_height="440dp"
+    android:background="@drawable/bg_ring">
+
+    <FrameLayout
+        android:layout_width="396dp"
+        android:layout_height="396dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_photo_border"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/photo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null" />
+    </FrameLayout>
+</FrameLayout>
