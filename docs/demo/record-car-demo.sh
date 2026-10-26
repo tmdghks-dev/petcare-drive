@@ -7,7 +7,8 @@ adb shell am force-stop ai.petcare.drive.car
 adb shell am start -n ai.petcare.drive.car/.MainActivity >/dev/null; sleep 4
 
 # "이 아이와 출발하기" 버튼 위치를 화면에서 찾아 누른다
-bounds=$(adb shell uiautomator dump /dev/tty | grep -o 'id/btnStart"[^>]*bounds="[^"]*"' | grep -oE '[0-9]+' | tail -4)
+adb shell uiautomator dump /sdcard/u.xml >/dev/null
+bounds=$(adb shell cat /sdcard/u.xml | grep -o 'id/btnStart"[^>]*bounds="[^"]*"' | grep -oE '[0-9]+' | tail -4)
 set -- ${=bounds}
 
 adb shell screenrecord --size 1920x1080 --bit-rate 8000000 --time-limit 45 /sdcard/demo.mp4 & REC=$!
