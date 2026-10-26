@@ -1,0 +1,26 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ai.petcare.drive.car'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'ai.petcare.drive.car'
+        minSdk 28 // Pleos 요구사항: API 28 이상
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'ai.pleos.playground:Vehicle:2.3.2'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+}
