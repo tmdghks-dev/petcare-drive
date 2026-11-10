@@ -99,7 +99,41 @@ public class MainActivity extends AppCompatActivity {
 
         vehicle = new Vehicle(this);
         vehicle.initialize();
+
+        FirebaseManager.getInstance().init(this, "car_01");
+        FirebaseManager.getInstance().listenForCommands((type, voiceUrl, params) -> {
+            if ("PLAY_VOICE".equals(type)) {
+                ui.post(() -> Toast.makeText(MainActivity.this, "보호자 목소리 재생 요청 수신", Toast.LENGTH_SHORT).show());
+                if (voiceUrl != null && voiceUrl.startsWith("http")) {
+                    FirebaseManager.getInstance().downloadVoiceFile(MainActivity.this, voiceUrl, new FirebaseManager.FileCallback() {
+                        @Override
+                        public void onSuccess(java.io.File file) {
+                            ui.post(() -> playDownloadedVoice(file));
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            ui.post(() -> Toast.makeText(MainActivity.this, "음성 다운로드 실패", Toast.LENGTH_SHORT).show());
+                        }
+                    });
+                }
+            }
+        });
+
         showProfiles();
+    }
+
+    private void playDownloadedVoice(java.io.File file) {
+        try {
+            stopMusic();
+            music = new MediaPlayer();
+            music.setDataSource(file.getAbsolutePath());
+            music.prepare();
+            music.start();
+            Toast.makeText(this, "보호자 목소리 재생 중", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "목소리 재생 오류", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // ── 1. 함께 탈 아이 선택 ─────────────────────────────
@@ -218,8 +252,24 @@ public class MainActivity extends AppCompatActivity {
         ui.post(() -> {
             update.run();
             renderVehicle();
+            uploadStatusToFirebase();
         });
         return Unit.INSTANCE;
+    }
+
+    private void uploadStatusToFirebase() {
+        try {
+            double tempVal = 23.0;
+            if (temp != null && temp.contains("℃")) {
+                tempVal = Double.parseDouble(temp.replace("℃", "").trim());
+            }
+            int batVal = 82;
+            if (battery != null && battery.contains("%")) {
+                batVal = Integer.parseInt(battery.replace("%", "").trim());
+            }
+            boolean isLocked = "잠김".equals(door);
+            FirebaseManager.getInstance().uploadCarStatus(tempVal, batVal, isLocked, "[주차 위치]", 42);
+        } catch (Exception ignored) {}
     }
 
     // ── 3. 짖음 감지: 보호자 알림 + 조명 + 음악을 동시에 ──────────
@@ -229,9 +279,11 @@ public class MainActivity extends AppCompatActivity {
         barkCount++;
         if (screen == R.layout.screen_calming) {
             meta("짖음 " + barkCount + "회 · " + hhmm(firstBarkAt) + " 시작");
+            FirebaseManager.getInstance().reportBarkEvent(barkCount, hhmm(firstBarkAt));
             return;
         }
         firstBarkAt = System.currentTimeMillis();
+        FirebaseManager.getInstance().reportBarkEvent(barkCount, hhmm(firstBarkAt));
         showCalming();
     }
 
@@ -318,6 +370,8 @@ public class MainActivity extends AppCompatActivity {
             music.setVolume(0.3f, 0.3f);
             ui.postDelayed(stopMusic, MUSIC_TAIL_MS);
         }
+
+        FirebaseManager.getInstance().reportCalmCompleted(duration(now - firstBarkAt));
 
         setScreen(R.layout.screen_calmed);
         top("진정 완료", false, hhmm(now) + " · 진정 완료");
