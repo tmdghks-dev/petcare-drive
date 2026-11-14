@@ -14,3 +14,4 @@ dist/
 node_modules/
 # 개인정보(연락처) 포함 신청서
 docs/접수양식_멍대표*.docx
+docs/demo/raw/

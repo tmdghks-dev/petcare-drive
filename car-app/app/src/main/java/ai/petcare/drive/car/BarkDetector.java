@@ -53,6 +53,11 @@ final class BarkDetector {
         this.listener = listener;
     }
 
+    // 시연 신호(adb BARK·WHINE)로 짖음을 만들었을 때 마이크도 '방금 들렸다'로 맞춘다. 안 그러면 바로 조용함으로 판단
+    void markHeard() {
+        lastDogAt = System.currentTimeMillis();
+    }
+
     // 모델을 열고 녹음을 시작한 뒤, PERIOD_MS마다 classifyOnce()를 부른다
     void start() {
         if (loop != null) return; // 이미 듣는 중

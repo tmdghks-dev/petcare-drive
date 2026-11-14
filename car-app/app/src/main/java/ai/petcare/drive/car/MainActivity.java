@@ -99,8 +99,10 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (ACTION_BARK.equals(action)) onBark(false);
-            else if (ACTION_WHINE.equals(action)) onBark(true);
+            if (ACTION_BARK.equals(action) || ACTION_WHINE.equals(action)) {
+                detector.markHeard();
+                onBark(ACTION_WHINE.equals(action));
+            }
             else if (ACTION_CALM.equals(action)) onCalm();
             else if (ACTION_ARRIVE.equals(action)) showStart(true);
             else if (ACTION_DANGER.equals(action)) {
@@ -656,6 +658,8 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         ui.removeCallbacks(idleTick);
         screen = layout;
         setContentView(layout);
+        // 화면(상태)이 바뀌면 바로 올린다. 폰 홈이 '달래는 중'·'위험'을 곧바로 보여 준다
+        FirebaseManager.getInstance().uploadCarStatus(tempC, soc, batteryWh, stateName());
     }
 
     // v2 위쪽 줄. caring: 펫케어 중이면 '펫케어 끝내기'를 보인다
