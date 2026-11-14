@@ -77,6 +77,7 @@ class FirebaseService {
     }
     _activeCarId = carId;
     pairedCar.value = carId;
+    if (_initialized) _fcm.getToken().then(_saveToken).catchError((_) {}); // 이 차로 푸시를 받는다
     await (await SharedPreferences.getInstance()).setString('carId', carId);
     return true;
   }
@@ -220,17 +221,22 @@ class FirebaseService {
   }
 
   /// FCM 푸시 알림 설정 (P-05, P-08, S-03)
+  /// 푸시를 받을 토큰을 연결한 차 아래에 저장한다. 서버(functions)가 이 목록으로 보낸다
   Future<void> setupFCM() async {
     try {
-      NotificationSettings settings = await _fcm.requestPermission();
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        String? token = await _fcm.getToken();
-        if (token != null) {
-          await _db.ref('vehicles/$_activeCarId/fcmTokens/$token').set(true);
-        }
-      }
+      final settings = await _fcm.requestPermission();
+      if (settings.authorizationStatus == AuthorizationStatus.denied) return;
+      await _saveToken(await _fcm.getToken());
+      _fcm.onTokenRefresh.listen(_saveToken);
     } catch (e) {
       print('FCM setup failed: $e');
     }
   }
+
+  Future<void> _saveToken(String? token) async {
+    final carId = pairedCar.value; // 연결 전이면 저장하지 않는다. 연결할 때 다시 부른다
+    if (token == null || carId == null || !_initialized) return;
+    await _db.ref('vehicles/$carId/fcmTokens/$token').set(true);
+  }
+
 }

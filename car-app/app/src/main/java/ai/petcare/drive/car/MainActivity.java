@@ -47,6 +47,7 @@ import kotlin.Unit;
 public class MainActivity extends AppCompatActivity implements BarkDetector.Listener {
 
     static final String ACTION_BARK = "ai.petcare.drive.car.BARK";
+    static final String ACTION_WHINE = "ai.petcare.drive.car.WHINE"; // 데모: 낑낑거림
     static final String ACTION_CALM = "ai.petcare.drive.car.CALM";
     static final String ACTION_ARRIVE = "ai.petcare.drive.car.ARRIVE";
     // 데모: 에뮬레이터는 실내 온도를 바꿀 수 없어서 신호로 대신한다. --ef temp 29.5 / SAFE로 해제
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     private int screen;            // 현재 화면 레이아웃 id
     private long careStartAt, firstBarkAt;
     private int barkCount;
+    private boolean whine; // 마지막으로 들린 소리가 낑낑거림인지
     private MediaPlayer music;
     private MediaPlayer voice;     // 보호자 목소리 (음악과 따로)
     private int voicePlays;
@@ -97,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (ACTION_BARK.equals(action)) onBark();
+            if (ACTION_BARK.equals(action)) onBark(false);
+            else if (ACTION_WHINE.equals(action)) onBark(true);
             else if (ACTION_CALM.equals(action)) onCalm();
             else if (ACTION_ARRIVE.equals(action)) showStart(true);
             else if (ACTION_DANGER.equals(action)) {
@@ -140,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         IntentFilter filter = new IntentFilter(ACTION_BARK);
+        filter.addAction(ACTION_WHINE);
         filter.addAction(ACTION_CALM);
         filter.addAction(ACTION_ARRIVE);
         filter.addAction(ACTION_DANGER);
@@ -487,10 +491,11 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     // ── ③ 짖음 감지: 보호자 알림 + 조명 + 음악을 동시에 ──────────
 
     @Override
-    public void onBark() {
+    public void onBark(boolean whine) {
         if (screen == R.layout.screen_start) return; // 펫케어 시작 전에는 무시
         barkCount++;
-        FirebaseManager.getInstance().reportBarkEvent(barkCount, hhmm(System.currentTimeMillis()));
+        this.whine = whine;
+        FirebaseManager.getInstance().reportBarkEvent(barkCount, whine);
         if (screen == R.layout.screen_danger) return; // 위험 화면이 먼저. 짖음 횟수만 센다
         if (screen == R.layout.screen_calming) {
             meta(barkMeta());
@@ -521,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     }
 
     private String barkMeta() {
-        return "짖음 감지 · " + hhmm(firstBarkAt) + (barkCount > 1 ? " · " + barkCount + "회" : "");
+        return (whine ? "낑낑거림 감지 · " : "짖음 감지 · ") + hhmm(firstBarkAt) + (barkCount > 1 ? " · " + barkCount + "회" : "");
     }
 
     private void calmLight() {

@@ -11,3 +11,4 @@ docs/slack-upload/
 ~$*
 /*.mp4
 dist/
+node_modules/

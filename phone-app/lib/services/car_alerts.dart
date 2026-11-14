@@ -1,22 +1,20 @@
-import 'dart:async';
-
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import 'firebase_service.dart';
-
-/// 차가 올리는 기록(짖음·진정·위험)을 듣고 있다가 휴대폰 알림으로 띄운다.
-// ponytail: 앱이 살아 있을 때만 온다. 앱이 꺼져도 받아야 하면 Cloud Functions + FCM 푸시로 (Blaze 요금제 필요)
+/// 차 기록(짖음·낑낑·진정·위험)은 서버(functions/index.js)가 FCM 푸시로 보낸다.
+/// 앱이 꺼져 있거나 뒤에 있으면 시스템이 알림을 띄우고, 화면에 떠 있을 때는 여기서 띄운다.
 class CarAlerts {
   CarAlerts._();
   static final CarAlerts instance = CarAlerts._();
 
   final _plugin = FlutterLocalNotificationsPlugin();
-  StreamSubscription<DatabaseEvent>? _sub;
 
   /// 이번에 받은 알림 (최신이 앞). 홈의 종 버튼이 보여 준다
   final ValueNotifier<List<String>> received = ValueNotifier(const []);
+
+  static const _bark = AndroidNotificationChannel('bark', '짖음 알림', importance: Importance.high);
+  static const _danger = AndroidNotificationChannel('danger', '위험 알림', importance: Importance.max);
 
   Future<void> init() async {
     await _plugin.initialize(
@@ -25,63 +23,38 @@ class CarAlerts {
         iOS: DarwinInitializationSettings(),
       ),
     );
-    await _plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
-    final service = FirebaseService.instance;
-    service.pairedCar.addListener(_listen);
-    _listen();
+    // 서버 푸시가 쓰는 채널을 미리 만든다 (앱이 꺼져 있을 때도 이 채널로 울린다)
+    final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    await android?.createNotificationChannel(_bark);
+    await android?.createNotificationChannel(_danger);
+    await android?.requestNotificationsPermission();
+
+    FirebaseMessaging.onMessage.listen(_show);
+    FirebaseMessaging.onMessageOpenedApp.listen(_remember);
   }
 
-  // 연결한 차가 바뀌면 그 차의 기록을 새로 듣는다. 지금 이후에 생긴 기록만
-  void _listen() {
-    _sub?.cancel();
-    final carId = FirebaseService.instance.pairedCar.value;
-    if (carId == null || !FirebaseService.instance.online) return;
-    _sub = FirebaseDatabase.instance
-        .ref('vehicles/$carId/events')
-        .orderByChild('timestamp')
-        .startAt(DateTime.now().millisecondsSinceEpoch)
-        .onChildAdded
-        .listen((e) {
-      final v = e.snapshot.value;
-      if (v is Map) _show(Map<String, dynamic>.from(v));
-    });
+  void _remember(RemoteMessage m) {
+    final title = m.notification?.title;
+    if (title != null) received.value = ['${m.data['time'] ?? ''}  $title', ...received.value];
   }
 
-  void _show(Map<String, dynamic> e) {
-    final text = '${e['text'] ?? ''}';
-    final value = '${e['value'] ?? ''}';
-    final String title, body;
-    int id = 1; // 같은 종류는 한 알림을 고쳐 쓴다 (짖을 때마다 쌓이지 않게)
-    bool urgent = false;
-    if (e['type'] == 'danger') {
-      title = '위험: $text';
-      body = e['temp'] != null ? '실내 ${(e['temp'] as num).toStringAsFixed(1)}°C · 차를 확인해 주세요' : '차를 확인해 주세요';
-      id = 2;
-      urgent = true;
-    } else if (e['bark'] == true) {
-      title = '달이가 짖고 있어요';
-      body = '차에서 조명·음악·목소리로 달래는 중이에요 · 짖음 $value';
-    } else if (text == '진정 완료') {
-      title = '달이가 진정했어요';
-      body = '달래는 데 $value 걸렸어요';
-      id = 3; // 짖음 알림은 남겨 둔다
-    } else {
-      return;
-    }
-    received.value = ['${e['time'] ?? ''}  $title', ...received.value];
+  void _show(RemoteMessage m) {
+    final n = m.notification;
+    if (n == null) return;
+    _remember(m);
+    final kind = m.data['kind'] ?? 'bark';
+    final danger = kind == 'danger';
     _plugin.show(
-      id: id,
-      title: title,
-      body: body,
+      id: switch (kind) { 'danger' => 2, 'calm' => 3, _ => 1 }, // 짖음은 한 알림을 고쳐 쓴다
+      title: n.title,
+      body: n.body,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
-          urgent ? 'danger' : 'bark',
-          urgent ? '위험 알림' : '짖음 알림',
+          danger ? _danger.id : _bark.id,
+          danger ? _danger.name : _bark.name,
           importance: Importance.high,
           priority: Priority.high,
-          onlyAlertOnce: !urgent, // 짖음 횟수만 바뀔 때는 다시 울리지 않는다
+          onlyAlertOnce: !danger, // 짖음 횟수만 바뀔 때는 다시 울리지 않는다
         ),
         iOS: const DarwinNotificationDetails(),
       ),

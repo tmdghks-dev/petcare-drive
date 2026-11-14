@@ -112,7 +112,7 @@ public class FirebaseManager {
     /**
      * 짖음 감지 및 진정 이벤트 발생 시 RTDB에 리포트 (C-05, S-03)
      */
-    public void reportBarkEvent(int barkCount, String valueNote) {
+    public void reportBarkEvent(int barkCount, boolean whine) {
         if (!initialized || carRef == null) return;
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -120,9 +120,10 @@ public class FirebaseManager {
 
         Map<String, Object> event = new HashMap<>();
         event.put("time", timeStr);
-        event.put("text", "짖음 감지 · 진정");
-        event.put("value", barkCount > 0 ? barkCount + "회" : valueNote);
+        event.put("text", whine ? "낑낑거림 감지 · 진정" : "짖음 감지 · 진정");
+        event.put("value", barkCount + "회");
         event.put("bark", true);
+        event.put("whine", whine);
         event.put("timestamp", ServerValue.TIMESTAMP);
 
         carRef.child("events").push().setValue(event);

@@ -1,93 +1,68 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+const { onValueCreated } = require("firebase-functions/v2/database");
+const { initializeApp } = require("firebase-admin/app");
+const { getDatabase } = require("firebase-admin/database");
+const { getMessaging } = require("firebase-admin/messaging");
 
-admin.initializeApp();
+initializeApp();
 
-/**
- * 짖음 감지 이벤트 RTDB 트리거 → FCM 푸시 알림 전송 (P-05, S-03)
- */
-exports.onBarkEventCreated = functions.database
-  .ref("/vehicles/{carId}/events/{eventId}")
-  .onCreate(async (snapshot, context) => {
-    const event = snapshot.val();
-    const carId = context.params.carId;
+// 차 앱이 남긴 기록(짖음·낑낑·진정·위험)을 그 차에 연결된 보호자 폰으로 푸시한다 (P-05, S-03, C-10)
+// 위험 판단은 차 앱이 반려견 적정 온도로 하고 type=danger 기록을 남긴다. 여기서는 전달만 한다
+exports.pushCarEvent = onValueCreated(
+  { ref: "/vehicles/{carId}/events/{eventId}", region: "us-central1" },
+  async (event) => {
+    const e = event.data.val();
+    const carId = event.params.carId;
+    const msg = toMessage(e);
+    if (!msg) return;
 
-    if (!event || (!event.bark && (!event.text || !event.text.includes("짖음")))) {
-      return null;
-    }
+    const tokensRef = getDatabase().ref(`/vehicles/${carId}/fcmTokens`);
+    const tokens = Object.keys((await tokensRef.get()).val() || {});
+    if (tokens.length === 0) return;
 
-    console.log(`Bark event detected for vehicle: ${carId}`);
-
-    // 차량에 등록된 보호자 FCM 토큰 목록 조회
-    const tokensSnap = await admin.database().ref(`/vehicles/${carId}/fcmTokens`).once("value");
-    if (!tokensSnap.exists()) {
-      console.log(`No FCM tokens found for vehicle: ${carId}`);
-      return null;
-    }
-
-    const tokens = Object.keys(tokensSnap.val());
-    if (tokens.length === 0) return null;
-
-    const payload = {
-      notification: {
-        title: "🐾 반려견 짖음 감지",
-        body: "차에서 짖음이 감지되어 세 가지 진정 동작을 시작했어요.",
+    const res = await getMessaging().sendEachForMulticast({
+      tokens,
+      notification: { title: msg.title, body: msg.body },
+      data: { kind: msg.kind, time: String(e.time || "") },
+      android: {
+        priority: "high",
+        notification: { channelId: msg.kind === "danger" ? "danger" : "bark", tag: msg.kind },
       },
-      data: {
-        click_action: "FLUTTER_NOTIFICATION_CLICK",
-        screen: "alert",
-        carId: carId,
-        time: event.time || "",
-      },
+      apns: { payload: { aps: { sound: "default" } } },
+    });
+
+    // 앱을 지웠거나 만료된 토큰은 지운다
+    const dead = {};
+    res.responses.forEach((r, i) => {
+      const code = r.error && r.error.code;
+      if (code === "messaging/registration-token-not-registered" || code === "messaging/invalid-registration-token") {
+        dead[tokens[i]] = null;
+      }
+    });
+    if (Object.keys(dead).length) await tokensRef.update(dead);
+    console.log(`${carId}: ${msg.kind} → ${res.successCount}/${tokens.length}`);
+  },
+);
+
+// 폰 앱 car_alerts.dart와 같은 문구
+function toMessage(e) {
+  if (!e) return null;
+  const value = e.value || "";
+  if (e.type === "danger") {
+    const temp = typeof e.temp === "number" ? `실내 ${e.temp.toFixed(1)}°C · ` : "";
+    return { kind: "danger", title: `위험: ${e.text || ""}`, body: `${temp}차를 확인해 주세요` };
+  }
+  if (e.bark === true) {
+    const whine = e.whine === true;
+    return {
+      kind: "bark",
+      title: whine ? "달이가 낑낑거려요" : "달이가 짖고 있어요",
+      body: `차에서 조명·음악·목소리로 달래는 중이에요 · ${whine ? "낑낑" : "짖음"} ${value}`,
     };
+  }
+  if (e.text === "진정 완료") {
+    return { kind: "calm", title: "달이가 진정했어요", body: `달래는 데 ${value} 걸렸어요` };
+  }
+  return null;
+}
 
-    try {
-      const response = await admin.messaging().sendToDevice(tokens, payload);
-      console.log(`Successfully sent ${response.successCount} notification messages.`);
-    } catch (error) {
-      console.error("Error sending FCM notification:", error);
-    }
-    return null;
-  });
-
-/**
- * 차량 온도 이상 경보 RTDB 트리거 → 긴급 푸시 알림 전송 (P-08)
- */
-exports.onEmergencyAlert = functions.database
-  .ref("/vehicles/{carId}/status")
-  .onUpdate(async (change, context) => {
-    const after = change.after.val();
-    const carId = context.params.carId;
-
-    if (!after || typeof after.temp !== "number") return null;
-
-    // 실내 온도가 28도 이상이거나 15도 이하일 때 긴급 경보
-    const isEmergency = after.temp >= 28.0 || after.temp <= 15.0;
-    if (!isEmergency) return null;
-
-    const tokensSnap = await admin.database().ref(`/vehicles/${carId}/fcmTokens`).once("value");
-    if (!tokensSnap.exists()) return null;
-
-    const tokens = Object.keys(tokensSnap.val());
-    if (tokens.length === 0) return null;
-
-    const payload = {
-      notification: {
-        title: "⚠️ 차량 실내 온도 위험 경보",
-        body: `현재 실내 온도가 ${after.temp.toFixed(1)}℃ 입니다. 환기 및 에어컨을 확인하세요!`,
-      },
-      data: {
-        click_action: "FLUTTER_NOTIFICATION_CLICK",
-        screen: "home",
-        carId: carId,
-      },
-    };
-
-    try {
-      await admin.messaging().sendToDevice(tokens, payload);
-      console.log(`Emergency alert sent for ${carId}`);
-    } catch (error) {
-      console.error("Error sending emergency alert:", error);
-    }
-    return null;
-  });
+module.exports.toMessage = toMessage;
