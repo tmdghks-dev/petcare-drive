@@ -1,0 +1,56 @@
+/* 펫케어 드라이브 화면 설계 v2 — 공통 토큰과 부품 */
+:root {
+  --bg: #f1f3f5;
+  --card: #ffffff;
+  --ink: #0f1115;
+  --ink2: #262d35;
+  --muted: #5f6772;
+  --label: #6b737c;
+  --line: #e3e7eb;
+  --blue: #0b75b3;
+  --blue-tint: #e3eff7;
+  --blue-soft: #d3e5f1;
+  --amber: #c46205;
+  --amber-tint: #fdeedd;
+  --amber-soft: #f9dcbc;
+  --red: #cf2f2f;
+  --red-tint: #fde8e8;
+  --red-soft: #f7c9c9;
+  --font: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font); color: var(--ink); background: #e6e9ed; letter-spacing: -0.02em; }
+.num { letter-spacing: -0.01em; font-feature-settings: "tnum"; }
+.ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ic.fill { fill: currentColor; stroke: none; }
+
+/* 보드 */
+.board { padding: 56px 64px 72px; }
+.board-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; }
+.board-head h1 { font-size: 40px; font-weight: 800; }
+.board-head p { font-size: 18px; color: var(--muted); margin-top: 8px; }
+.board-head .tag { font-size: 16px; color: var(--muted); }
+.shot-label { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.shot-label b { font-size: 22px; font-weight: 800; }
+.shot-label span { font-size: 16px; color: var(--muted); }
+.shot-label i { font-style: normal; font-size: 15px; font-weight: 700; color: #fff; background: var(--ink); border-radius: 8px; padding: 3px 9px; }
+.note { font-size: 17px; line-height: 1.55; color: var(--ink2); }
+.note h4 { font-size: 15px; font-weight: 700; color: var(--muted); margin: 14px 0 6px; }
+.note h4:first-child { margin-top: 0; }
+.note ul { list-style: none; }
+.note li { padding-left: 16px; position: relative; }
+.note li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 6px; height: 6px; border-radius: 50%; background: #9aa2ac; }
+.note .new { color: var(--blue); font-weight: 700; }
+
+/* 상태 칩: 세 가지뿐 */
+.chip { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+.chip::before { content: ""; width: 0.5em; height: 0.5em; border-radius: 50%; background: currentColor; }
+.chip.calm { color: var(--blue); background: var(--blue-tint); }
+.chip.soothe { color: var(--amber); background: var(--amber-tint); }
+.chip.danger { color: var(--red); background: var(--red-tint); }
+
+/* 반려견 상반신(배경 지운 사진) */
+.bust { position: relative; }
+.bust .halo { position: absolute; border-radius: 50%; background: radial-gradient(closest-side, var(--halo, #d3e5f1) 0%, var(--halo2, #dbeaf4) 55%, rgba(219, 234, 244, 0) 100%); }
+.bust img { position: absolute; -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 98%); mask-image: linear-gradient(to bottom, #000 72%, transparent 98%); }
+.avatar { border-radius: 50%; object-fit: cover; object-position: 45% 55%; display: block; }
