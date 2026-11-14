@@ -29,6 +29,13 @@
 **운전 중**
 - 반려견과 1시간 달리면 쉬어 가자고 음성 + 배너로 안내
 
+**구현 예정 (2차)**
+- 실시간으로 목소리 들려주기: 보호자가 폰에서 말하면 차 스피커로 바로 전달 (실시간 통화)
+- 폰에서 녹음한 목소리 보내기 (차량 쪽 수신·재생은 구현됨)
+- 목적지 도착 감지(NaviHelper)로 펫케어 시작 화면 자동 표시
+- 더울 때 창문 2cm 환기 (Window 제어 권한 승인 후)
+- 분리불안 리포트 (날짜별 짖음 횟수·진정 시간), iOS 보호자 앱
+
 ## APK
 
 `apk/` 폴더에 release APK가 있습니다. 두 앱 모두 팀 Firebase에 연결된 빌드입니다. ([Releases](https://github.com/tmdghks-dev/petcare-drive/releases/latest)에도 같은 파일이 있습니다)
@@ -65,9 +72,9 @@ adb -s emulator-5554 shell am start --user current -n ai.petcare.drive.car/.Main
 ```bash
 adb -s <폰> install -r apk/멍대표_PetCareDriveGuardian_release.apk
 ```
-앱에서 `자동차 QR 연결`로 차 화면의 QR을 찍습니다. 카메라가 없으면 차 코드로 바로 연결할 수 있습니다.
+앱에서 `자동차 QR 연결`로 차 화면의 QR을 찍습니다. 카메라가 없으면 차 화면의 차 코드로 바로 연결할 수 있습니다.
 ```bash
-adb -s <폰> shell am start -a android.intent.action.VIEW -d "petcare://pair?car=E8D9DDA8"
+adb -s <폰> shell am start -a android.intent.action.VIEW -d "petcare://pair?car=<차 코드>"
 ```
 차 화면에 `보호자 폰과 연결됐어요`가 뜨면 연결 완료입니다.
 
