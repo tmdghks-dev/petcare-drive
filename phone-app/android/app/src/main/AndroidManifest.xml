@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 차 QR 스캔 -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:label="petcare_phone"
         android:name="${applicationName}"
