@@ -40,8 +40,8 @@
 - [x] 재녹화: `docs/demo/raw2/car.mp4`(2560x1440), `phone.mp4` — 영상은 git에 없음, 이 Mac에만 있음. 다시 찍으려면 `zsh docs/demo/record-v2.sh`
 - [x] 선희 목소리 대본(`script-v2.txt`) → `assets/vo2/*.mp3` + 단어 타이밍 `assets/vo2/vo.json` (`uv run --with edge-tts python tts.py`)
 - [x] Pretendard 글꼴, 효과음 복사
-- [ ] 장면 13개 작성 (index.html·compositions는 아직 v1 상태)
-- [ ] check → 스냅샷 → 렌더
+- [x] 장면 13개 작성 (build.py로 생성, v1은 v1/에 보관)
+- [x] check → 스냅샷 → 렌더: docs/demo/petcare-drive-shorts-v2.mp4 (77초)
 
 ### 녹화에서 쓸 순간 (초)
 - car.mp4: QR 4-12 / 폰 연결 배너 16-20 / 휴식 배너 22-30 / 시작 화면·음악 켜기 34-37.5 / 대기 38-45 / 달래는 중 46-57 / 에어컨 21.5 배너 61-66 / 진정 요약 70-76 / 낑낑 79-87 / 위험 92-102
