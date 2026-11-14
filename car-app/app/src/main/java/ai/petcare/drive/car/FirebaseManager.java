@@ -103,6 +103,12 @@ public class FirebaseManager {
                 .addOnFailureListener(e -> Log.e(TAG, "Failed to upload car status", e));
     }
 
+    /** 에어컨 설정 온도를 올린다. 폰 온도 화면이 이 값으로 맞춘다 */
+    public void reportTargetTemp(float tempC) {
+        if (!initialized || carRef == null) return;
+        carRef.child("status").child("targetTemp").setValue(tempC);
+    }
+
     /**
      * 짖음 감지 및 진정 이벤트 발생 시 RTDB에 리포트 (C-05, S-03)
      */

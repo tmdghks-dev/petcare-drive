@@ -162,6 +162,10 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         FirebaseManager.getInstance().init(this, carId());
         FirebaseManager.getInstance().listenForPairing(() -> ui.post(this::onPaired));
         FirebaseManager.getInstance().listenForCommands((type, voiceUrl, params) -> {
+            if ("SET_TEMP".equals(type) && params != null && params.get("temp") instanceof Number) {
+                ui.post(() -> setCabinTemp(((Number) params.get("temp")).floatValue()));
+                return;
+            }
             if (!"PLAY_VOICE".equals(type) || voiceUrl == null || !voiceUrl.startsWith("http")) return;
             FirebaseManager.getInstance().downloadVoiceFile(this, voiceUrl, new FirebaseManager.FileCallback() {
                 @Override
@@ -407,6 +411,22 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
             FirebaseManager.getInstance().uploadCarStatus(tempC, soc, batteryWh, stateName());
         });
         return Unit.INSTANCE;
+    }
+
+    // ── 보호자 폰에서 보낸 설정 온도 → 에어컨 (C-13) ─────────────
+    // ponytail: 반려견 적정 범위 밖 값도 그대로 따른다. 막아야 하면 Dog.tempMin/Max로 자르기
+    private void setCabinTemp(float t) {
+        vehicle.getHVAC().setHvacPower(CABIN, true, (a, on) -> Unit.INSTANCE, e -> Unit.INSTANCE);
+        vehicle.getHVAC().setHvacTemperature(CABIN, t, TemperatureUnit.CELSIUS,
+                (area, set) -> {
+                    ui.post(() -> banner(String.format(Locale.KOREA, "보호자가 에어컨을 %.1f°C로 맞췄어요", set)));
+                    FirebaseManager.getInstance().reportTargetTemp(set);
+                    return Unit.INSTANCE;
+                },
+                e -> {
+                    ui.post(() -> banner("이 차에서는 온도를 바꿀 수 없어요"));
+                    return Unit.INSTANCE;
+                });
     }
 
     // ── ④ 위험: 온도·배터리가 위험하면 바로 바꾸고, 해결되면 대기로 ──────────

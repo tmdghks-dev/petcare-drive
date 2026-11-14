@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'data.dart';
 import 'qr_scan_screen.dart';
@@ -43,6 +45,16 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int page = 0;
   double temperature = 22;
+  Timer? sendTemp;
+
+  // 슬라이더를 움직이는 동안은 모았다가 멈추면 한 번만 차로 보낸다
+  void setTemperature(double value) {
+    setState(() => temperature = value);
+    sendTemp?.cancel();
+    sendTemp = Timer(const Duration(milliseconds: 600), () {
+      FirebaseService.instance.sendRemoteCommand('SET_TEMP', {'temp': double.parse(value.toStringAsFixed(1))});
+    });
+  }
   bool ventilation = false;
 
   final pages = const [
@@ -113,9 +125,7 @@ class _MainScreenState extends State<MainScreen> {
             TemperaturePage(
               temperature: temperature,
               ventilation: ventilation,
-              onTemperatureChanged: (value) {
-                setState(() => temperature = value);
-              },
+              onTemperatureChanged: setTemperature,
               onVentilationChanged: (value) {
                 setState(() => ventilation = value);
               },
@@ -499,8 +509,10 @@ class TemperaturePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
-                '현재는 화면 시연용입니다. 실제 차량 온도 및 환기 제어는 연결되지 않았어요.',
+              Text(
+                FirebaseService.instance.pairedCar.value == null
+                    ? '차와 연결하면 설정 온도가 차 에어컨으로 바로 전달돼요. 환기는 아직 시연용이에요.'
+                    : '설정 온도는 차 에어컨으로 바로 전달돼요. 환기는 창문 제어 승인 후 연결돼요.',
                 style: TextStyle(color: muted, fontSize: 12, height: 1.5),
                 textAlign: TextAlign.center,
               ),
