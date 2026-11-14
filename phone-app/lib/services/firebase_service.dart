@@ -12,10 +12,11 @@ class FirebaseService {
   FirebaseService._();
   static final FirebaseService instance = FirebaseService._();
 
-  final FirebaseDatabase _db = FirebaseDatabase.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  // getter로 둬야 init() 전에 접근해도 안 터진다 (google-services.json 없으면 instance가 예외)
+  FirebaseDatabase get _db => FirebaseDatabase.instance;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
+  FirebaseMessaging get _fcm => FirebaseMessaging.instance;
 
   bool _initialized = false;
   String _activeCarId = 'car_01'; // 기본 차량 ID

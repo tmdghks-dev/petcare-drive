@@ -92,7 +92,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-}
 
 class _Stat extends StatelessWidget {
   const _Stat(this.icon, this.label, this.value, {this.small = false});
