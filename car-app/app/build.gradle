@@ -28,7 +28,7 @@ dependencies {
     implementation 'com.google.mediapipe:tasks-audio:1.0.0'
     implementation 'com.google.zxing:core:3.5.3' // ⑤ 연결 QR 만들기
 
-    // Firebase (선환 firebase 브랜치). google-services.json을 app/에 넣고 plugins에 google-services를 켜면 연결된다
+    // Firebase. google-services.json을 app/에 넣으면 자동으로 연결된다 (위 apply plugin 참고)
     implementation platform('com.google.firebase:firebase-bom:33.9.0')
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-storage'

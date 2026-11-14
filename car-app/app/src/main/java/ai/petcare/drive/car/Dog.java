@@ -3,7 +3,7 @@ package ai.petcare.drive.car;
 import java.util.List;
 
 // 반려견 프로필. 적정 온도로 대기 화면 안내 문구를 만든다.
-// ponytail: 지금은 앱 안에 고정. Firebase 연결 후 폰 앱에서 등록한 프로필을 받아오도록 교체
+// TODO: 지금은 앱 안에 고정. Firebase 연결 후 폰 앱에서 등록한 프로필을 받아오도록 교체
 final class Dog {
     final String name;
     final int photoRes;

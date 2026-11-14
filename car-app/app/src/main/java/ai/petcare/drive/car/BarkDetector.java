@@ -31,7 +31,7 @@ final class BarkDetector {
     static final Set<String> DOG = Set.of("Dog", "Bark", "Yip", "Howl", "Bow-wow", "Growling", "Canidae, dogs, wolves");
     static final float THRESHOLD = 0.3f;  // 개 소리 점수가 이 이상이면 들린 것으로 본다. Logcat 보며 조정
     // 낑낑거림은 짖음보다 점수가 낮게 나와 기준을 따로 둔다
-    // ponytail: 0.2는 몇 번 들어 보고 정한 값. 오탐·미탐이 보이면 Logcat의 whine= 값을 보고 조정
+    // TODO: 0.2는 몇 번 들어 보고 정한 값. 오탐·미탐이 보이면 Logcat의 whine= 값을 보고 조정
     static final float WHINE_THRESHOLD = 0.2f;
     static final int SAMPLE_RATE = 16000; // YAMNet 입력: 1초에 16000개
     static final int WINDOW = 15600;      // YAMNet이 한 번에 듣는 길이: 0.975초 분량

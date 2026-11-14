@@ -4,22 +4,17 @@
 local.properties
 .gradle/
 build/
+node_modules/
+dist/
+~$*
+/*.mp4
+*.docx
+
 # Firebase 설정 파일은 팀 내부에서만 공유
 google-services.json
 GoogleService-Info.plist
-docs/slack-upload/
-~$*
-/*.mp4
-dist/
-node_modules/
-# 개인정보(연락처) 포함 신청서
-docs/접수양식_멍대표*.docx
-docs/demo/raw/
-docs/demo/petcare-drive-demo.mp4
-docs/demo/petcare-drive-demo-voice.mp4
-docs/demo/petcare-drive-shorts.mp4
-docs/demo/shorts-hf/.hyperframes/
-docs/demo/shorts-hf/renders/
-docs/demo/raw2/
-docs/demo/shorts-hf/.thumbnails/
-docs/demo/petcare-drive-shorts-v2.mp4
+
+# 팀 내부 자료 (기획 문서, 영상 작업 파일)
+_local/
+.archify/
+영상/

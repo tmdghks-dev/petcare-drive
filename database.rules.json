@@ -1,0 +1,14 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "vehicles": {
+      "$carId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "$carId.matches(/^car_[0-9a-z]{2,32}$/)",
+        "events": { ".indexOn": ["timestamp"] }
+      }
+    }
+  }
+}

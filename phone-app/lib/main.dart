@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'data.dart';
 import 'qr_scan_screen.dart';
@@ -9,7 +10,16 @@ import 'services/firebase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FirebaseService.instance.init(); // 설정 파일이 없으면 오프라인으로 동작
-  await CarAlerts.instance.init(); // 짖음·위험 기록이 오면 휴대폰 알림
+  CarAlerts.instance.init(); // 짖음·위험 기록이 오면 휴대폰 알림
+  // 차 QR 링크로 앱이 열리면 바로 연결
+  final links = AppLinks();
+  void pairFrom(Uri uri) {
+    final carId = carIdFromQr(uri.toString());
+    if (carId != null) FirebaseService.instance.pairCar(carId);
+  }
+  final first = await links.getInitialLink();
+  if (first != null) pairFrom(first);
+  links.uriLinkStream.listen(pairFrom);
   runApp(const PetCareApp());
 }
 

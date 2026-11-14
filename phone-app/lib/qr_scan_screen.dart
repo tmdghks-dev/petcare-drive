@@ -8,7 +8,9 @@ import 'services/firebase_service.dart';
 String? carIdFromQr(String value) {
   final uri = Uri.tryParse(value);
   if (uri == null || uri.scheme != 'petcare' || uri.host != 'pair') return null;
-  return uri.queryParameters['car'];
+  final car = uri.queryParameters['car']?.trim().toLowerCase();
+  if (car == null || car.isEmpty) return null;
+  return car.startsWith('car_') ? car : 'car_$car'; // 차 화면의 코드(E8D9DDA8)만 넣어도 된다
 }
 
 class QrScanScreen extends StatefulWidget {

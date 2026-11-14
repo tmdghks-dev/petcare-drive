@@ -3,7 +3,14 @@
     {
       "source": "functions",
       "codebase": "default",
-      "ignore": ["node_modules", ".git", "test.js"]
+      "ignore": [
+        "node_modules",
+        ".git",
+        "test.js"
+      ]
     }
-  ]
+  ],
+  "database": {
+    "rules": "database.rules.json"
+  }
 }

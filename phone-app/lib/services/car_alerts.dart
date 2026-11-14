@@ -27,7 +27,7 @@ class CarAlerts {
     final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     await android?.createNotificationChannel(_bark);
     await android?.createNotificationChannel(_danger);
-    await android?.requestNotificationsPermission();
+    android?.requestNotificationsPermission(); // 권한 창에 답할 때까지 앱 시작을 막지 않는다
 
     FirebaseMessaging.onMessage.listen(_show);
     FirebaseMessaging.onMessageOpenedApp.listen(_remember);

@@ -21,8 +21,8 @@ import ai.pleos.playground.vehicle.listener.GearSelectionListener;
 // 운전 중 휴식 알림: 반려견과 오래 달리면 쉬어 가자고 말로 알려 준다
 // 기어가 P가 아니면 주행으로 보고 시간을 잰다. P로 5분 넘게 있으면 쉰 것으로 보고 처음부터 다시 잰다
 // 주행 중이라 누를 버튼은 없다. 음성 + 저절로 사라지는 짧은 알림만
-// ponytail: 같이 탄 아이는 ①에서 고른 아이로 본다. "오늘 함께 타요" 확인 화면은 필요해지면 추가
-// ponytail: Activity가 살아 있는 동안만 동작. 앱이 꺼져도 돌아야 하면 Foreground Service로 옮긴다
+// TODO: 같이 탄 아이는 ①에서 고른 아이로 본다. "오늘 함께 타요" 확인 화면은 필요해지면 추가
+// TODO: Activity가 살아 있는 동안만 동작. 앱이 꺼져도 돌아야 하면 Foreground Service로 옮긴다
 class RestReminder {
     private static final String TAG = "RestReminder";
     static final long INTERVAL_MS = 60 * 60_000; // 첫 알림: 1시간 주행
@@ -150,7 +150,7 @@ class RestReminder {
     }
 
     // clip: 음성 엔진을 못 쓸 때 대신 틀 녹음. 0이면 말하지 않는다
-    // ponytail: 녹음은 "달이·1시간" 고정 문구(시연용). Pleos 음성 SDK를 붙이면 녹음 없이 tts만 쓰면 됨
+    // TODO: 녹음은 "달이·1시간" 고정 문구(시연용). Pleos 음성 SDK를 붙이면 녹음 없이 tts만 쓰면 됨
     private void show(String text, int clip) {
         Log.d(TAG, text);
         banner.accept(text);

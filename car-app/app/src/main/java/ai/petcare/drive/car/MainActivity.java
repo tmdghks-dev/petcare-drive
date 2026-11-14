@@ -43,7 +43,7 @@ import kotlin.Unit;
 // ① 펫케어 시작 → ② 펫케어 대기 ⇄ ③ 달래는 중(알림·조명·음악 동시)
 // 데모 트리거: adb shell am broadcast -a ai.petcare.drive.car.BARK / .CALM / .ARRIVE
 // 짖음 감지: BarkDetector(마이크 + YAMNet). adb BARK/CALM은 시연용으로 남겨 둔다
-// ponytail: 도착 감지도 broadcast로 대체. NaviHelper 도착 이벤트가 붙으면 showStart(true)만 호출하면 됨
+// TODO: 도착 감지도 broadcast로 대체. NaviHelper 도착 이벤트가 붙으면 showStart(true)만 호출하면 됨
 public class MainActivity extends AppCompatActivity implements BarkDetector.Listener {
 
     static final String ACTION_BARK = "ai.petcare.drive.car.BARK";
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         return prefs.getBoolean("paired", false);
     }
 
-    // ponytail: QR에 차 ID만 담는다. 디자인의 '5분짜리 연결 코드'는 폰 앱이 코드를 확인하게 되면 추가
+    // TODO: QR에 차 ID만 담는다. 디자인의 '5분짜리 연결 코드'는 폰 앱이 코드를 확인하게 되면 추가
     private void showConnect() {
         setScreen(R.layout.screen_connect);
         bar(false);
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
             markSelected(card, selected.contains(dog));
             row.addView(card);
         }
-        // ponytail: 카드가 많아지면 한 줄에 넘침. 3마리 이상 지원할 때 가로 스크롤로 교체
+        // TODO: 카드가 많아지면 한 줄에 넘침. 3마리 이상 지원할 때 가로 스크롤로 교체
         View add = inflater.inflate(R.layout.item_add, row, false);
         add.setOnClickListener(v -> banner("아이 추가는 보호자 앱에서 할 수 있어요"));
         row.addView(add);
@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         stat(R.id.stat2, R.drawable.ic_clock, "혼자 있은 시간",
                 min < 60 ? min + "분" : min / 60 + "시간 " + min % 60 + "분", hhmm(careStartAt) + "부터", R.color.muted);
 
-        // ponytail: 공조 소비전력 1.5kW 고정 가정, 실측 소비량이 있으면 그걸로 교체
+        // TODO: 공조 소비전력 1.5kW 고정 가정, 실측 소비량이 있으면 그걸로 교체
         float hours = batteryWh / 1500f;
         String keep = batteryWh < 0 ? "--" : hours >= 1 ? "약 " + Math.round(hours) + "시간" : "약 " + Math.round(hours * 60) + "분";
         stat(R.id.stat3, R.drawable.ic_battery, "펫케어 유지", keep, soc < 0 ? "배터리 확인 중" : "배터리 " + soc + "%", R.color.muted);
@@ -420,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     }
 
     // ── 보호자 폰에서 보낸 설정 온도 → 에어컨 (C-13) ─────────────
-    // ponytail: 반려견 적정 범위 밖 값도 그대로 따른다. 막아야 하면 Dog.tempMin/Max로 자르기
+    // TODO: 반려견 적정 범위 밖 값도 그대로 따른다. 막아야 하면 Dog.tempMin/Max로 자르기
     private void setCabinTemp(float t) {
         vehicle.getHVAC().setHvacPower(CABIN, true, (a, on) -> Unit.INSTANCE, e -> Unit.INSTANCE);
         vehicle.getHVAC().setHvacTemperature(CABIN, t, TemperatureUnit.CELSIUS,
@@ -438,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     // ── ④ 위험: 온도·배터리가 위험하면 바로 바꾸고, 해결되면 대기로 ──────────
 
     // 위험하지 않으면 null. 첫 반려견의 적정 범위 기준
-    // ponytail: 여유 폭(+3°C / -5°C, 1시간)은 감으로 정함. 수의사 기준이 있으면 그걸로
+    // TODO: 여유 폭(+3°C / -5°C, 1시간)은 감으로 정함. 수의사 기준이 있으면 그걸로
     private String dangerReason() {
         if (selected.isEmpty()) return null;
         Dog d = selected.iterator().next();
@@ -474,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         text(R.id.name, names());
         text(R.id.noticeText, hhmm(dangerAt) + " · 보호자에게 긴급 알림을 보냈어요");
         String range = d.name + " 적정 " + d.tempMin + "~" + d.tempMax + "°C";
-        // ponytail: 창문 2cm 환기(C-17)는 Window 제어 권한 승인 전이라 문구에서 뺌. 승인되면 "창문을 2cm 열어 두었어요" 추가
+        // TODO: 창문 2cm 환기(C-17)는 Window 제어 권한 승인 전이라 문구에서 뺌. 승인되면 "창문을 2cm 열어 두었어요" 추가
         if ("battery".equals(reason)) {
             text(R.id.headline, "배터리가 부족해요");
             text(R.id.value, soc >= 0 ? soc + "%" : "--");
@@ -523,7 +523,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         action(R.id.actVoice, R.drawable.ic_voice, "보호자 목소리", "\"금방 올게\"", "준비 중");
         calmLight();
         startMusic();
-        // ponytail: 자동으로 틀 목소리는 앱에 넣어 둔 샘플. 보호자 앱 ⑤에서 고른 목소리(Storage)로 교체
+        // TODO: 자동으로 틀 목소리는 앱에 넣어 둔 샘플. 보호자 앱 ⑤에서 고른 목소리(Storage)로 교체
         playVoice(MediaPlayer.create(this, R.raw.owner_voice), "\"금방 올게\"");
     }
 

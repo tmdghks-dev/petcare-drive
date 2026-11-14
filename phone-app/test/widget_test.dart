@@ -12,5 +12,6 @@ void main() {
   test('차 QR에서 차 코드를 꺼낸다', () {
     expect(carIdFromQr('petcare://pair?car=car_90fa8b49'), 'car_90fa8b49');
     expect(carIdFromQr('https://example.com'), isNull);
+    expect(carIdFromQr('petcare://pair?car=E8D9DDA8'), 'car_e8d9dda8');
   });
 }

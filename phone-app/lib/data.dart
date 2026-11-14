@@ -1,5 +1,5 @@
 // 반려견 프로필과 차량 상태.
-// ponytail: 지금은 앱 안의 데모 값. Firebase 연결 후 vehicles/{carId}/status·events·profile 구독으로 교체
+// TODO: 지금은 앱 안의 데모 값. Firebase 연결 후 vehicles/{carId}/status·events·profile 구독으로 교체
 class Dog {
   Dog({required this.name, this.photo, this.breed = '', this.age = '', this.tempMin = 22, this.tempMax = 24, this.anxious = false});
 
