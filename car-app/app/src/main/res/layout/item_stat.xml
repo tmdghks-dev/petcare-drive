@@ -6,44 +6,37 @@
     android:orientation="vertical"
     android:padding="32dp">
 
-    <FrameLayout
-        android:id="@+id/tile"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_tile">
-
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_gravity="center"
-            android:contentDescription="@null"
-            android:tint="@color/primary" />
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:contentDescription="@null"
+        android:tint="@color/ink" />
 
     <TextView
         android:id="@+id/label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
         android:textColor="@color/muted"
-        android:textSize="24sp" />
+        android:textSize="26sp" />
 
     <TextView
         android:id="@+id/value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
+        android:maxLines="1"
         android:text="--"
         android:textColor="@color/ink"
-        android:textSize="48sp"
+        android:textSize="58sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/muted"
-        android:textSize="22sp" />
+        android:textSize="25sp" />
 </LinearLayout>

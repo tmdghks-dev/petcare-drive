@@ -1,13 +1,21 @@
 <resources>
-    <!-- 디자인 시안과 같은 토큰. 화면마다 색을 새로 만들지 말고 여기 것만 쓴다 -->
-    <color name="bg">#F2F7FB</color>
+    <!-- 화면 설계 v2(docs/design/ui-v2) 토큰. 화면마다 색을 새로 만들지 말고 여기 것만 쓴다 -->
+    <color name="bg">#F1F3F5</color>
     <color name="card">#FFFFFF</color>
-    <color name="ink">#0E2A47</color>
-    <color name="muted">#51667C</color>
+    <color name="ink">#0F1115</color>
+    <color name="ink2">#262D35</color>
+    <color name="muted">#5F6772</color>
+    <color name="line">#E3E7EB</color>
+    <color name="dashed">#C3CAD2</color>
+    <color name="outline">#CDD3DA</color>
+    <!-- 상태 3가지: 차분해요(파랑) · 달래는 중(주황) · 위험(빨강) -->
     <color name="primary">#0B75B3</color>
+    <color name="tint">#E3EFF7</color>
+    <color name="tint_strong">#D3E5F1</color>
+    <color name="amber">#C46205</color>
+    <color name="amber_tint">#FDEEDD</color>
+    <color name="red">#CF2F2F</color>
+    <color name="red_tint">#FDE8E8</color>
+    <!-- 조명 색 (차분한 파란빛) -->
     <color name="accent">#00AAD2</color>
-    <color name="tint">#E1F3FA</color>
-    <color name="tint_strong">#BFE6F4</color>
-    <color name="line">#D8E6F0</color>
-    <color name="dashed">#A9C7DB</color>
 </resources>

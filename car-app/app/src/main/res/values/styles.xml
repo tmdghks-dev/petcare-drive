@@ -33,4 +33,14 @@
         <item name="android:background">@drawable/bg_btn_outline</item>
         <item name="android:textColor">@color/primary</item>
     </style>
+    <!-- ① 펫케어 시작 오른쪽 패널의 체크 줄 -->
+    <style name="Check">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:drawableStart">@drawable/ic_check_primary</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/ink2</item>
+    </style>
 </resources>

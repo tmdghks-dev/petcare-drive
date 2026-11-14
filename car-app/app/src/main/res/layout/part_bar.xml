@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v2 공통 위쪽 줄: 앱 이름 · 보호자 앱 연결 상태 · 펫케어 끝내기(펫케어 중에만) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="95dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="58dp">
+
+    <ImageView
+        android:layout_width="37dp"
+        android:layout_height="37dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_paw"
+        android:tint="@color/primary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
+        android:text="펫케어"
+        android:textColor="@color/ink"
+        android:textSize="29sp"
+        android:textStyle="bold" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <View
+        android:id="@+id/linkDot"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:background="@drawable/dot_muted" />
+
+    <TextView
+        android:id="@+id/link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
+        android:textColor="@color/muted"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/btnEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="29dp"
+        android:background="@drawable/bg_btn_end"
+        android:paddingHorizontal="26dp"
+        android:paddingVertical="11dp"
+        android:text="펫케어 끝내기"
+        android:textColor="@color/ink2"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+</LinearLayout>

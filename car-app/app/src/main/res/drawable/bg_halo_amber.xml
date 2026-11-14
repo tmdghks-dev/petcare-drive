@@ -1,0 +1,4 @@
+<!-- 달래는 중 화면 반려견 뒤 연한 주황 원 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <gradient android:type="radial" android:gradientRadius="50%" android:startColor="#FBDDB8" android:centerColor="#FDE8CF" android:endColor="#00FDE8CF" />
+</shape>

@@ -1,0 +1,5 @@
+<!-- 위험 화면: 지나가는 사람이 할 일 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/red" />
+    <corners android:radius="37dp" />
+</shape>

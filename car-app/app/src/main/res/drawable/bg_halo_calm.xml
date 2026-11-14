@@ -1,0 +1,4 @@
+<!-- 대기 화면 반려견 뒤 연한 파란 원 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <gradient android:type="radial" android:gradientRadius="50%" android:startColor="@color/tint_strong" android:centerColor="#DBEAF4" android:endColor="#00DBEAF4" />
+</shape>

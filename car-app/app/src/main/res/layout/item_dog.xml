@@ -1,70 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="0dp"
+<!-- ① 펫케어 시작의 아이 카드. 선택하면 파란 테두리와 체크 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="370dp"
     android:layout_height="match_parent"
-    android:layout_marginEnd="24dp"
-    android:layout_weight="1"
+    android:layout_marginEnd="32dp"
     android:background="@drawable/bg_card"
     android:clickable="true"
-    android:focusable="true"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="32dp">
-
-    <FrameLayout
-        android:layout_width="256dp"
-        android:layout_height="256dp">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_ring"
-            android:padding="8dp">
-
-            <ImageView
-                android:id="@+id/photo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@null" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/badge"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="bottom|end"
-            android:background="@drawable/bg_pill_strong">
-
-            <ImageView
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:layout_gravity="center"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_check" />
-        </FrameLayout>
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textColor="@color/ink"
-        android:textSize="44sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/muted"
-        android:textSize="24sp" />
+    android:focusable="true">
 
     <LinearLayout
-        android:id="@+id/chips"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal" />
-</LinearLayout>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingTop="48dp">
+
+        <ImageView
+            android:id="@+id/photo"
+            android:layout_width="190dp"
+            android:layout_height="190dp"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/ink"
+            android:textSize="45sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:textColor="@color/muted"
+            android:textSize="26sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/badge"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="24dp"
+        android:background="@drawable/bg_pill_strong">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_check" />
+    </FrameLayout>
+</FrameLayout>

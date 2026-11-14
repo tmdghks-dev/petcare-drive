@@ -1,0 +1,4 @@
+<!-- 위험 화면 반려견 뒤 연한 빨간 원 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <gradient android:type="radial" android:gradientRadius="50%" android:startColor="#F9D2D2" android:centerColor="#FBE0E0" android:endColor="#00FBE0E0" />
+</shape>

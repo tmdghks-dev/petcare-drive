@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ⑤ 폰 연결: 처음 한 번만. QR 하나와 3단계 설명만 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical">
+
+    <include layout="@layout/part_bar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="40dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="40dp">
+
+            <ImageView
+                android:id="@+id/qr"
+                android:layout_width="420dp"
+                android:layout_height="420dp"
+                android:contentDescription="보호자 앱 연결 QR" />
+
+            <TextView
+                android:id="@+id/carCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/muted"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="640dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="80dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="처음 한 번만 하면 돼요"
+                android:textColor="@color/primary"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="보호자 앱과\n연결해 주세요"
+                android:textColor="@color/ink"
+                android:textSize="72sp"
+                android:textStyle="bold" />
+
+            <TextView
+                style="@style/Check"
+                android:layout_marginTop="40dp"
+                android:drawableStart="@null"
+                android:text="1   휴대폰에서 펫케어 앱을 열어요" />
+
+            <TextView
+                style="@style/Check"
+                android:drawableStart="@null"
+                android:text="2   ‘차 연결’을 눌러 이 QR을 찍어요" />
+
+            <TextView
+                style="@style/Check"
+                android:drawableStart="@null"
+                android:text="3   짖음·온도 알림을 폰으로 받아요" />
+
+            <TextView
+                android:id="@+id/btnLater"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:background="@drawable/bg_btn_end"
+                android:paddingHorizontal="40dp"
+                android:paddingVertical="18dp"
+                android:text="나중에 하기"
+                android:textColor="@color/ink2"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

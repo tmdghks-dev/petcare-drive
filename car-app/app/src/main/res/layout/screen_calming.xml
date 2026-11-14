@@ -1,82 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ③ 달래는 중: 짖음을 감지하면 자동으로. 누를 것은 없고 지금 무엇으로 달래는지만 보여 준다 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
-    android:orientation="vertical"
-    android:paddingHorizontal="72dp"
-    android:paddingVertical="56dp">
+    android:orientation="vertical">
 
-    <include android:id="@+id/top" layout="@layout/part_top" />
+    <include layout="@layout/part_bar" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <include layout="@layout/part_photo" />
+        <LinearLayout
+            android:layout_width="560dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="520dp"
+                android:layout_height="500dp">
+
+                <View
+                    android:layout_width="460dp"
+                    android:layout_height="460dp"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="13dp"
+                    android:background="@drawable/bg_halo_amber" />
+
+                <ImageView
+                    android:id="@+id/bust"
+                    android:layout_width="410dp"
+                    android:layout_height="473dp"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="26dp"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/ink"
+                android:textSize="50sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_pill_amber"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="34dp"
+                android:paddingVertical="14dp">
+
+                <View
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:background="@drawable/dot_amber" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="13dp"
+                    android:text="달래는 중"
+                    android:textColor="@color/amber"
+                    android:textSize="34sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="80dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingBottom="30dp"
+            android:paddingEnd="70dp">
+
+            <TextView
+                android:id="@+id/meta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_amber"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="12dp"
+                android:textColor="@color/amber"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/headline"
-                style="@style/Headline"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:textColor="@color/ink"
+                android:textSize="64sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/sub"
-                style="@style/Sub"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="12dp"
+                android:text="보호자에게 알렸어요. 지금 이렇게 달래고 있어요."
+                android:textColor="@color/muted"
+                android:textSize="30sp" />
 
-            <include android:id="@+id/actNotify" layout="@layout/item_action" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="32dp" />
+            <include android:id="@+id/actVoice" layout="@layout/item_action" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="32dp" />
             <include android:id="@+id/actLight" layout="@layout/item_action" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" />
             <include android:id="@+id/actMusic" layout="@layout/item_action" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" />
+
+            <TextView
+                android:id="@+id/footnote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:drawableStart="@drawable/ic_check_primary"
+                android:drawablePadding="14dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/ink2"
+                android:textSize="28sp" />
         </LinearLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/line" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="32dp">
-
-        <TextView
-            android:id="@+id/footnote"
-            style="@style/Footnote"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <Button
-            android:id="@+id/btnMusic"
-            style="@style/BtnOutline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="음악 바꾸기" />
-
-        <Button
-            android:id="@+id/btnStopCalm"
-            style="@style/BtnPrimary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="진정 모드 끄기" />
     </LinearLayout>
 </LinearLayout>
