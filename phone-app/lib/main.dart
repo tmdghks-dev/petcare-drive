@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'data.dart';
 import 'qr_scan_screen.dart';
 import 'services/firebase_service.dart';
 
@@ -90,13 +91,24 @@ class _MainScreenState extends State<MainScreen> {
         child: IndexedStack(
           index: page,
           children: [
-            HomePage(
-              temperature: temperature,
-              onTemperature: () => goTo(1),
-              onVoice: () => goTo(2),
-              onProfile: () => goTo(3),
-              onAlarm: () => showMessage('아직 받은 알림이 없어요.'),
-              onQrConnect: openQrScanner,
+            // QR로 연결한 차가 있으면 차가 올리는 상태를 실시간으로 보여 준다
+            ValueListenableBuilder<String?>(
+              valueListenable: FirebaseService.instance.pairedCar,
+              builder: (context, carId, _) => StreamBuilder<CarStatus>(
+                stream: carId != null && FirebaseService.instance.online
+                    ? FirebaseService.instance.streamCarStatus(carId: carId)
+                    : null,
+                builder: (context, snap) => HomePage(
+                  temperature: temperature,
+                  carCode: carId?.replaceFirst('car_', '').toUpperCase(),
+                  live: snap.data,
+                  onTemperature: () => goTo(1),
+                  onVoice: () => goTo(2),
+                  onProfile: () => goTo(3),
+                  onAlarm: () => showMessage('아직 받은 알림이 없어요.'),
+                  onQrConnect: openQrScanner,
+                ),
+              ),
             ),
             TemperaturePage(
               temperature: temperature,
@@ -153,6 +165,8 @@ class _MainScreenState extends State<MainScreen> {
 
 class HomePage extends StatelessWidget {
   final double temperature;
+  final String? carCode; // 연결한 차 코드. 연결 전이면 null
+  final CarStatus? live; // 차에서 받은 실시간 상태. Firebase 연결 전이면 null
   final VoidCallback onTemperature;
   final VoidCallback onVoice;
   final VoidCallback onProfile;
@@ -162,12 +176,21 @@ class HomePage extends StatelessWidget {
   const HomePage({
     super.key,
     required this.temperature,
+    this.carCode,
+    this.live,
     required this.onTemperature,
     required this.onVoice,
     required this.onProfile,
     required this.onAlarm,
     required this.onQrConnect,
   });
+
+  static String stateLabel(String state) => switch (state) {
+        'calm' => '펫케어 중',
+        'calming' => '달래는 중',
+        'danger' => '위험',
+        _ => '펫케어 꺼짐',
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -213,14 +236,14 @@ class HomePage extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.circle, color: blue, size: 9),
-                          SizedBox(width: 6),
+                          const Icon(Icons.circle, color: blue, size: 9),
+                          const SizedBox(width: 6),
                           Text(
-                            '차량 연결 대기',
-                            style: TextStyle(
+                            carCode == null ? '차량 연결 대기' : '차량 연결됨 · $carCode',
+                            style: const TextStyle(
                               color: blue,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -248,7 +271,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const SectionTitle(title: '달이의 현재 상태', subtitle: '예시 화면'),
+        SectionTitle(title: '달이의 현재 상태', subtitle: live == null ? '예시 화면' : '차에서 실시간으로 받아요'),
         const SizedBox(height: 12),
         Row(
           children: [
@@ -257,8 +280,8 @@ class HomePage extends StatelessWidget {
                 icon: Icons.thermostat_rounded,
                 iconColor: blue,
                 title: '실내 온도',
-                value: '${temperature.toStringAsFixed(1)}°C',
-                detail: '예시 데이터',
+                value: '${(live?.temp ?? temperature).toStringAsFixed(1)}°C',
+                detail: live == null ? '예시 데이터' : '차 실내 온도',
                 onTap: onTemperature,
               ),
             ),
@@ -268,8 +291,8 @@ class HomePage extends StatelessWidget {
                 icon: Icons.directions_car_rounded,
                 iconColor: const Color(0xFF32966F),
                 title: '차량 상태',
-                value: '연결 대기',
-                detail: '차량 연결 필요',
+                value: carCode == null ? '연결 대기' : live == null ? '연결됨' : stateLabel(live!.state),
+                detail: carCode == null ? '차량 연결 필요' : '차 코드 $carCode',
                 onTap: onAlarm,
               ),
             ),

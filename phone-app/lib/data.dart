@@ -13,13 +13,14 @@ class Dog {
 }
 
 class CarStatus {
-  const CarStatus({required this.temp, required this.battery, required this.careHours, required this.locked, required this.place});
+  const CarStatus({required this.temp, required this.battery, required this.careHours, required this.locked, required this.place, this.state = 'off'});
 
   final double temp;
   final int battery;
   final int careHours;
   final bool locked;
   final String place;
+  final String state; // 차가 올리는 펫케어 상태: off · calm · calming · danger
 }
 
 class LogEntry {

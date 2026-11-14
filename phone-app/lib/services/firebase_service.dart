@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data.dart';
 
 /// Firebase 통합 서비스 레이어 (보호자 앱)
@@ -23,9 +25,20 @@ class FirebaseService {
 
   String get activeCarId => _activeCarId;
 
+  /// Firebase에 연결돼 차와 실제로 주고받는지 (설정 파일이 있어야 true)
+  bool get online => _initialized;
+
+  /// QR로 연결한 차 ID. 연결 전이면 null. 앱을 다시 켜도 기억한다
+  final ValueNotifier<String?> pairedCar = ValueNotifier(null);
+
   /// Firebase 초기화 및 익명 로그인 / FCM 설정
   Future<void> init() async {
     if (_initialized) return;
+    final saved = (await SharedPreferences.getInstance()).getString('carId');
+    if (saved != null) {
+      _activeCarId = saved;
+      pairedCar.value = saved;
+    }
     try {
       await Firebase.initializeApp();
       // 익명 사용자 인증
@@ -42,19 +55,22 @@ class FirebaseService {
 
   /// 차량 QR / ID로 바인딩 (S-01, P-01, C-02)
   Future<bool> pairCar(String carId) async {
-    _activeCarId = carId;
-    if (!_initialized) return true;
-    try {
-      final ref = _db.ref('vehicles/$carId/info');
-      await ref.set({
-        'pairedAt': ServerValue.timestamp,
-        'ownerUid': _auth.currentUser?.uid ?? 'anonymous',
-      });
-      return true;
-    } catch (e) {
-      print('Failed to pair car: $e');
-      return false;
+    if (_initialized) {
+      try {
+        // 차 앱이 이 값을 보고 '보호자 폰 연결됨'으로 바뀐다
+        await _db.ref('vehicles/$carId/info').set({
+          'pairedAt': ServerValue.timestamp,
+          'ownerUid': _auth.currentUser?.uid ?? 'anonymous',
+        });
+      } catch (e) {
+        print('Failed to pair car: $e');
+        return false;
+      }
     }
+    _activeCarId = carId;
+    pairedCar.value = carId;
+    await (await SharedPreferences.getInstance()).setString('carId', carId);
+    return true;
   }
 
   /// 실시간 차량 상태 스트림 (S-02, P-04, C-09)
@@ -75,6 +91,7 @@ class FirebaseService {
         careHours: (data['careHours'] as num?)?.toInt() ?? 42,
         locked: (data['locked'] as bool?) ?? true,
         place: (data['place'] as String?) ?? '[주차 위치]',
+        state: (data['state'] as String?) ?? 'off',
       );
     }).handleError((_) => demoStatus);
   }

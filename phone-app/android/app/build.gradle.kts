@@ -3,6 +3,8 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+// Firebase 설정 파일이 있을 때만 연결한다. 없으면 오프라인으로 빌드·동작 (google-services.json은 git에 올리지 않음)
+if (file("google-services.json").exists()) apply(plugin = "com.google.gms.google-services")
 
 android {
     namespace = "ai.petcare.drive.petcare_phone"

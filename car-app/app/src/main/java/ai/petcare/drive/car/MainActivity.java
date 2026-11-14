@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     // 마이크 권한을 물은 뒤 결과를 받는다. 허용하면 바로 듣기 시작
     private final ActivityResultLauncher<String> askMic = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), granted -> {
-                if (!granted) Toast.makeText(this, "마이크 권한이 없어 짖음을 감지할 수 없어요", Toast.LENGTH_LONG).show();
+                if (!granted) banner("마이크 권한이 없어 짖음을 감지할 수 없어요");
                 else if (screen != R.layout.screen_start) detector.start();
             });
 
@@ -172,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
 
                 @Override
                 public void onError(Exception e) {
-                    ui.post(() -> Toast.makeText(MainActivity.this, "목소리를 받지 못했어요", Toast.LENGTH_SHORT).show());
+                    ui.post(() -> banner("목소리를 받지 못했어요"));
                 }
             });
         });
@@ -210,13 +209,12 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     private void onPaired() {
         boolean first = !paired();
         prefs.edit().putBoolean("paired", true).apply();
-        if (screen == R.layout.screen_connect) {
-            showStart(false);
-            Toast.makeText(this, "보호자 폰과 연결됐어요", Toast.LENGTH_LONG).show();
-        } else if (first && findViewById(R.id.link) != null) {
+        if (screen == R.layout.screen_connect) showStart(false);
+        else if (findViewById(R.id.link) != null) {
             text(R.id.link, "보호자 폰 연결됨");
             findViewById(R.id.linkDot).setBackgroundResource(R.drawable.dot_primary);
         }
+        if (first) banner("보호자 폰과 연결됐어요"); // Pleos는 Toast를 띄우지 않는다
     }
 
     private static Bitmap qr(String content, int size) {
@@ -262,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         }
         // ponytail: 카드가 많아지면 한 줄에 넘침. 3마리 이상 지원할 때 가로 스크롤로 교체
         View add = inflater.inflate(R.layout.item_add, row, false);
-        add.setOnClickListener(v -> Toast.makeText(this, "아이 추가는 보호자 앱에서 할 수 있어요", Toast.LENGTH_SHORT).show());
+        add.setOnClickListener(v -> banner("아이 추가는 보호자 앱에서 할 수 있어요"));
         row.addView(add);
 
         findViewById(R.id.btnStart).setOnClickListener(v -> {
@@ -611,7 +609,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         });
         voice.start();
         voiceStatus(label + (voicePlays > 1 ? " · " + voicePlays + "번째" : ""), "재생 중");
-        if (screen != R.layout.screen_calming) Toast.makeText(this, "보호자 목소리를 들려주고 있어요", Toast.LENGTH_SHORT).show();
+        if (screen != R.layout.screen_calming) banner("보호자 목소리를 들려주고 있어요");
     }
 
     private void voiceStatus(String sub, String status) {

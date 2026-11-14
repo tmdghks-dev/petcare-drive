@@ -38,7 +38,14 @@ class _QrScanScreenState extends State<QrScanScreen> {
           paired = null;
         });
         FirebaseService.instance.pairCar(carId).then((ok) {
-          if (mounted) setState(() => paired = ok);
+          if (!mounted) return;
+          setState(() => paired = ok);
+          // 연결되면 잠깐 보여 주고 홈으로 돌아간다 (홈에 '차량 연결됨'이 뜬다)
+          if (ok) {
+            Future.delayed(const Duration(milliseconds: 1500), () {
+              if (mounted) Navigator.pop(context);
+            });
+          }
         });
         break;
       }
