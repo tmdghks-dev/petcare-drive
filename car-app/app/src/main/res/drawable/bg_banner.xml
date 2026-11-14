@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 휴식 알림 배너: 진한 바탕 + 둥근 모서리 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/primary" />
+    <corners android:radius="40dp" />
+</shape>

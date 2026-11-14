@@ -53,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     // 데모: 에뮬레이터는 실내 온도를 바꿀 수 없어서 신호로 대신한다. --ef temp 29.5 / SAFE로 해제
     static final String ACTION_DANGER = "ai.petcare.drive.car.DANGER";
     static final String ACTION_SAFE = "ai.petcare.drive.car.SAFE";
+    // 데모: 휴식 알림. DRIVE --ei min 60 → 60분 달린 것으로, REST → 5분 쉰 것으로
+    static final String ACTION_DRIVE = "ai.petcare.drive.car.DRIVE";
+    static final String ACTION_REST = "ai.petcare.drive.car.REST";
     static final int[] MUSIC = {R.raw.calm_music_1, R.raw.calm_music_2};
     static final SeatArea CABIN = new SeatArea(SeatValue.ROW_1_LEFT);
     static final long MUSIC_TAIL_MS = 2 * 60_000; // 진정 후 음악을 작게 더 틀어주는 시간
@@ -72,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     private int track;
     private LightSwitch lightBefore;
     private BarkDetector detector;
+    private RestReminder rest;
+    private TextView bannerView;
+    private final Runnable hideBanner = () -> bannerView.setVisibility(View.GONE);
     // 마이크 권한을 물은 뒤 결과를 받는다. 허용하면 바로 듣기 시작
     private final ActivityResultLauncher<String> askMic = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), granted -> {
@@ -102,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
             } else if (ACTION_SAFE.equals(action)) {
                 demoTemp = Float.NaN;
                 readVehicle();
-            }
+            } else if (ACTION_DRIVE.equals(action)) rest.demoDrive(intent.getIntExtra("min", 60));
+            else if (ACTION_REST.equals(action)) rest.demoRest();
         }
     };
 
@@ -138,11 +145,15 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         filter.addAction(ACTION_ARRIVE);
         filter.addAction(ACTION_DANGER);
         filter.addAction(ACTION_SAFE);
+        filter.addAction(ACTION_DRIVE);
+        filter.addAction(ACTION_REST);
         ContextCompat.registerReceiver(this, receiver, filter, ContextCompat.RECEIVER_EXPORTED);
 
         vehicle = new Vehicle(this);
         vehicle.initialize();
         detector = new BarkDetector(this, this);
+        rest = new RestReminder(this, vehicle, this::names, this::banner);
+        rest.start();
         prefs = getSharedPreferences("petcare", MODE_PRIVATE);
         FirebaseManager.getInstance().init(this, carId());
         FirebaseManager.getInstance().listenForPairing(() -> ui.post(this::onPaired));
@@ -631,6 +642,29 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         end.setOnClickListener(v -> showStart(false));
     }
 
+    // 어느 화면이든 위쪽 가운데에 잠깐 띄우는 알림. 운전 중이라 누를 것 없이 10초 뒤 사라진다
+    // decorView에 붙여 setContentView로 화면이 바뀌어도 남는다
+    private void banner(String msg) {
+        ViewGroup decor = (ViewGroup) getWindow().getDecorView();
+        if (bannerView == null) {
+            bannerView = new TextView(this);
+            bannerView.setTextSize(32);
+            bannerView.setTextColor(0xFFFFFFFF);
+            bannerView.setTypeface(null, android.graphics.Typeface.BOLD);
+            bannerView.setBackgroundResource(R.drawable.bg_banner);
+            bannerView.setPadding(56, 32, 56, 32);
+            android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    android.view.Gravity.TOP | android.view.Gravity.CENTER_HORIZONTAL);
+            lp.topMargin = 140;
+            decor.addView(bannerView, lp);
+        }
+        bannerView.setText(msg); // 새 알림이 오면 겹치지 않고 글자만 바꾼다
+        bannerView.setVisibility(View.VISIBLE);
+        ui.removeCallbacks(hideBanner);
+        ui.postDelayed(hideBanner, 10_000);
+    }
+
     private void meta(String meta) {
         text(R.id.meta, meta);
     }
@@ -703,6 +737,7 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
     @Override
     protected void onDestroy() {
         detector.stop();
+        rest.stop();
         unregisterReceiver(receiver);
         stopMusic();
         stopVoice();
