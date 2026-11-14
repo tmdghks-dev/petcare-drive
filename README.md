@@ -29,20 +29,41 @@
 **운전 중**
 - 반려견과 1시간 달리면 쉬어 가자고 음성 + 배너로 안내
 
-## 바로 시연하기 (APK)
+## APK
 
-[Releases](https://github.com/tmdghks-dev/petcare-drive/releases/latest)에서 APK 두 개를 받습니다. 두 앱 모두 팀 Firebase에 연결된 빌드입니다.
+`apk/` 폴더에 release APK가 있습니다. 두 앱 모두 팀 Firebase에 연결된 빌드입니다. ([Releases](https://github.com/tmdghks-dev/petcare-drive/releases/latest)에도 같은 파일이 있습니다)
+
+| 파일 | 앱 |
+|---|---|
+| [`apk/멍대표_PetCareDrive_release.apk`](apk/멍대표_PetCareDrive_release.apk) | 차량 앱 (Pleos Connect) |
+| [`apk/멍대표_PetCareDriveGuardian_release.apk`](apk/멍대표_PetCareDriveGuardian_release.apk) | 보호자 앱 (Android) |
+
+## 테스트 환경
+
+| 항목 | 값 |
+|---|---|
+| 에뮬레이터 | Pleos Connect Emulator 2.1.0 (Android 14, API 34, arm64) |
+| 화면 규격 | 2560 × 1440 (가로), 앱 영역은 왼쪽 계기판을 뺀 오른쪽 화면 |
+| 보호자 앱 | Android 8.0 이상 실기기 또는 에뮬레이터 (Google Play 서비스 필요, 인터넷 연결) |
+| 개발 도구 | Android Studio, JDK 21, Gradle 8.10.2, AGP 8.8.2, Vehicle SDK 2.3.2, Flutter 3.47 |
+
+필요한 설정
+- 차량 앱 권한: 마이크(짖음 감지), 알림. 처음 실행할 때 허용합니다.
+- 실제 소리로 짖음 감지를 시험하려면 에뮬레이터를 `-allow-host-audio` 옵션으로 실행합니다.
+- 보호자 앱은 알림 권한을 허용해야 푸시를 받습니다.
+
+## 실행 방법
 
 **1. 차량 앱** (Pleos Connect 에뮬레이터 2.1.0)
 ```bash
-adb -s emulator-5554 install -r PetCareDrive_car.apk
+adb -s emulator-5554 install -r apk/멍대표_PetCareDrive_release.apk
 adb -s emulator-5554 shell am start --user current -n ai.petcare.drive.car/.MainActivity
 ```
 처음 실행하면 연결 QR과 차 코드(예: `E8D9DDA8`)가 나옵니다.
 
 **2. 보호자 앱** (Android 폰 또는 폰 에뮬레이터)
 ```bash
-adb -s <폰> install -r PetCareDrive_phone.apk
+adb -s <폰> install -r apk/멍대표_PetCareDriveGuardian_release.apk
 ```
 앱에서 `자동차 QR 연결`로 차 화면의 QR을 찍습니다. 카메라가 없으면 차 코드로 바로 연결할 수 있습니다.
 ```bash
@@ -87,7 +108,7 @@ adb -s <폰> shell am start -a android.intent.action.VIEW -d "petcare://pair?car
 
 ## 소스에서 빌드
 
-Firebase 설정 파일(`google-services.json`)은 저장소에 없습니다. 설정 파일 없이 빌드하면 Firebase 없이(폰 연결·푸시 제외) 동작합니다. 전체 기능은 Releases의 APK로 확인해 주세요.
+Firebase 설정 파일(`google-services.json`)은 저장소에 없습니다. 설정 파일 없이 빌드하면 Firebase 없이(폰 연결·푸시 제외) 동작합니다. 전체 기능은 `apk/` 폴더의 APK로 확인해 주세요.
 
 ```bash
 # 차량 앱 (JDK 21)

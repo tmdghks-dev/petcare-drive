@@ -13,12 +13,20 @@ android {
         minSdk 28 // Pleos 요구사항: API 28 이상
         targetSdk 35
         versionCode 1
-        versionName '0.1.0'
+        versionName '1.0.0'
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        release {
+            // 심사용 release APK. 바로 설치할 수 있도록 디버그 키로 서명한다
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+        }
     }
 }
 
