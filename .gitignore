@@ -10,3 +10,4 @@ GoogleService-Info.plist
 docs/slack-upload/
 ~$*
 /*.mp4
+dist/

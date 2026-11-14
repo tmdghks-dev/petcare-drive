@@ -41,21 +41,29 @@ class FirebaseService {
     }
     try {
       await Firebase.initializeApp();
-      // 익명 사용자 인증
-      if (_auth.currentUser == null) {
-        await _auth.signInAnonymously();
-      }
-      _initialized = true;
-      setupFCM(); // 알림 권한 창에 답할 때까지 앱 시작을 막지 않는다
     } catch (e) {
-      // Firebase 설정 파일(google-services.json)이 없을 경우 오프라인 fallback 모드로 수월하게 동작
+      // Firebase 설정 파일(google-services.json)이 없을 때만 오프라인으로 동작
       print('Firebase init warning (using offline fallback if missing config): $e');
+      return;
+    }
+    // 설정이 있으면 온라인. 로그인이 잠깐 실패해도(잠금 화면·네트워크) 오프라인으로 빠지지 않고 나중에 다시 시도한다
+    _initialized = true;
+    _signIn();
+    setupFCM(); // 알림 권한 창에 답할 때까지 앱 시작을 막지 않는다
+  }
+
+  Future<void> _signIn() async {
+    try {
+      if (_auth.currentUser == null) await _auth.signInAnonymously();
+    } catch (e) {
+      print('Anonymous sign-in failed (will retry): $e');
     }
   }
 
   /// 차량 QR / ID로 바인딩 (S-01, P-01, C-02)
   Future<bool> pairCar(String carId) async {
     if (_initialized) {
+      await _signIn(); // 앱을 켤 때 로그인에 실패했으면 여기서 다시
       try {
         // 차 앱이 이 값을 보고 '보호자 폰 연결됨'으로 바뀐다
         await _db.ref('vehicles/$carId/info').set({
