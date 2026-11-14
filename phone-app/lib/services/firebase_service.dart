@@ -45,8 +45,8 @@ class FirebaseService {
       if (_auth.currentUser == null) {
         await _auth.signInAnonymously();
       }
-      await setupFCM();
       _initialized = true;
+      setupFCM(); // 알림 권한 창에 답할 때까지 앱 시작을 막지 않는다
     } catch (e) {
       // Firebase 설정 파일(google-services.json)이 없을 경우 오프라인 fallback 모드로 수월하게 동작
       print('Firebase init warning (using offline fallback if missing config): $e');
