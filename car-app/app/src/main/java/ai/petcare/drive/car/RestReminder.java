@@ -1,5 +1,8 @@
 package ai.petcare.drive.car;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -132,11 +135,26 @@ class RestReminder {
                 alerts == 1 ? R.raw.rest_1 : R.raw.rest_2);
     }
 
+    // 내비 등 다른 앱이 앞에 있어도 위에 뜨도록 시스템 알림(heads-up)으로도 보낸다. 10초 뒤 저절로 사라짐
+    private void notifyCar(String text) {
+        NotificationManager nm = ctx.getSystemService(NotificationManager.class);
+        nm.createNotificationChannel(new NotificationChannel("rest", "휴식 알림", NotificationManager.IMPORTANCE_HIGH));
+        nm.notify(1, new Notification.Builder(ctx, "rest")
+                .setSmallIcon(R.drawable.ic_clock)
+                .setContentTitle("펫케어")
+                .setContentText(text)
+                .setCategory(Notification.CATEGORY_REMINDER)
+                .setTimeoutAfter(10_000)
+                .setAutoCancel(true)
+                .build());
+    }
+
     // clip: 음성 엔진을 못 쓸 때 대신 틀 녹음. 0이면 말하지 않는다
     // ponytail: 녹음은 "달이·1시간" 고정 문구(시연용). Pleos 음성 SDK를 붙이면 녹음 없이 tts만 쓰면 됨
     private void show(String text, int clip) {
         Log.d(TAG, text);
         banner.accept(text);
+        notifyCar(text);
         if (clip == 0) return;
         if (ttsReady) {
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "rest");

@@ -11,6 +11,8 @@
     <uses-permission android:name="pleos.car.permission.CONTROL_CAR_LIGHTS" />
     <!-- 짖음 감지: 차량 마이크 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- 휴식 알림: 내비가 앞에 있어도 알림으로 띄운다 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature android:name="android.hardware.type.automotive" android:required="true" />
 

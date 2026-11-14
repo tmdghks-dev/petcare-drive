@@ -154,6 +154,11 @@ public class MainActivity extends AppCompatActivity implements BarkDetector.List
         detector = new BarkDetector(this, this);
         rest = new RestReminder(this, vehicle, this::names, this::banner);
         rest.start();
+        // 휴식 알림을 내비 위에도 띄우려면 알림 권한이 필요하다 (Android 13+)
+        if (android.os.Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), g -> { })
+                    .launch(Manifest.permission.POST_NOTIFICATIONS);
         prefs = getSharedPreferences("petcare", MODE_PRIVATE);
         FirebaseManager.getInstance().init(this, carId());
         FirebaseManager.getInstance().listenForPairing(() -> ui.post(this::onPaired));
