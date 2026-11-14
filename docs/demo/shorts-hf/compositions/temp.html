@@ -1,0 +1,57 @@
+<template>
+<style>
+  @font-face { font-family: "SDGothic"; src: local("AppleSDGothicNeo-Medium"); font-weight: 500; }
+  @font-face { font-family: "SDGothic"; src: local("AppleSDGothicNeo-Heavy"); font-weight: 900; }
+  #root { position: absolute; inset: 0; font-family: "SDGothic"; color: #202833; overflow: hidden; }
+  .title { position: absolute; left: 80px; right: 80px; top: 300px; font-size: 92px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.18; }
+  .title .w { display: inline-block; margin-right: 0.22em; }
+  .kicker { position: absolute; left: 84px; top: 300px; font-size: 42px; font-weight: 500; color: #5b6673; }
+  .accent { color: #087db5; }
+  .phone { position: absolute; width: 540px; height: 1200px; left: 270px; border-radius: 70px; background: #111; padding: 18px;
+    box-shadow: 0 40px 80px rgba(16,24,40,.22); }
+  .phone .screen { position: relative; width: 100%; height: 100%; border-radius: 54px; overflow: hidden; background: #fff; }
+  .phone video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+  .car { position: absolute; left: 40px; width: 1000px; height: 760px; border-radius: 34px; background: #0f1115; padding: 14px;
+    box-shadow: 0 40px 80px rgba(16,24,40,.22); }
+  .car .screen { position: relative; width: 100%; height: 100%; border-radius: 22px; overflow: hidden; background: #fff; }
+  .car video { position: absolute; width: 1536px; height: 864px; left: -540px; top: -36px; }
+
+  #temp-t1 { top: 300px; }
+  #temp-t2 { top: 300px; }
+  #temp-phone { top: 560px; }
+  #temp-car { top: 620px; }
+</style>
+<div id="root" data-composition-id="temp" data-width="1080" data-height="1920">
+
+  <div id="temp-t1" class="title"><span class="w">폰에서</span><span class="w">온도를</span><span class="w accent">내리면</span></div>
+  <div id="temp-t2" class="title"><span class="w">차</span><span class="w">에어컨이</span><span class="w accent">바로</span><span class="w">바뀌어요</span></div>
+  <div id="temp-phone" class="phone"><div class="screen">
+    <video id="temp-pvid" class="clip" src="assets/clips/ph_temp.mp4" data-start="0" data-duration="2.3" data-media-start="1.6" muted playsinline></video>
+  </div></div>
+  <div id="temp-car" class="car"><div class="screen">
+    <video id="temp-cvid" class="clip" src="assets/clips/car_temp.mp4" data-start="2.1" data-duration="2.5" data-media-start="1.8" muted playsinline></video>
+  </div></div>
+
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+
+  function words(sel, at, tl) {
+    document.querySelectorAll(sel + " .w").forEach((el, i) => {
+      tl.fromTo(el, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power4.out" }, at + i * 0.08);
+    });
+  }
+
+
+  tl.fromTo("#temp-phone", { x: 700 }, { x: 0, duration: 0.6, ease: "expo.out" }, 0);
+  words("#temp-t1", 0.1, tl);
+  tl.to("#temp-t1", { opacity: 0, filter: "blur(8px)", duration: 0.18 }, 2.0);
+  tl.to("#temp-phone", { x: -900, duration: 0.45, ease: "power3.in" }, 1.9);
+  tl.fromTo("#temp-car", { x: 1100 }, { x: 0, duration: 0.6, ease: "expo.out" }, 2.1);
+  tl.fromTo("#temp-t2", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.15);
+  words("#temp-t2", 2.15, tl);
+  tl.to("#temp-car, #temp-t2", { opacity: 0, duration: 0.3, ease: "power3.in" }, 4.25);
+
+window.__timelines["temp"] = tl;
+</script>
+</template>

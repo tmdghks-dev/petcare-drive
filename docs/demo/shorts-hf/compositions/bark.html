@@ -1,0 +1,64 @@
+<template>
+<style>
+  @font-face { font-family: "SDGothic"; src: local("AppleSDGothicNeo-Medium"); font-weight: 500; }
+  @font-face { font-family: "SDGothic"; src: local("AppleSDGothicNeo-Heavy"); font-weight: 900; }
+  #root { position: absolute; inset: 0; font-family: "SDGothic"; color: #202833; overflow: hidden; }
+  .title { position: absolute; left: 80px; right: 80px; top: 300px; font-size: 92px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.18; }
+  .title .w { display: inline-block; margin-right: 0.22em; }
+  .kicker { position: absolute; left: 84px; top: 300px; font-size: 42px; font-weight: 500; color: #5b6673; }
+  .accent { color: #087db5; }
+  .phone { position: absolute; width: 540px; height: 1200px; left: 270px; border-radius: 70px; background: #111; padding: 18px;
+    box-shadow: 0 40px 80px rgba(16,24,40,.22); }
+  .phone .screen { position: relative; width: 100%; height: 100%; border-radius: 54px; overflow: hidden; background: #fff; }
+  .phone video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+  .car { position: absolute; left: 40px; width: 1000px; height: 760px; border-radius: 34px; background: #0f1115; padding: 14px;
+    box-shadow: 0 40px 80px rgba(16,24,40,.22); }
+  .car .screen { position: relative; width: 100%; height: 100%; border-radius: 22px; overflow: hidden; background: #fff; }
+  .car video { position: absolute; width: 1536px; height: 864px; left: -540px; top: -36px; }
+
+  #bark-wave { position: absolute; left: 90px; right: 90px; top: 760px; height: 420px; display: flex; align-items: center; justify-content: space-between; }
+  .bar { display: block; width: 26px; height: 420px; border-radius: 13px; background: #087db5; }
+  #bark-woof { position: absolute; left: 0; right: 0; top: 520px; text-align: center; font-size: 150px; font-weight: 900; color: #202833; }
+  #bark-title { top: 300px; }
+  #bark-car { top: 600px; }
+  #bark-cap { position: absolute; left: 84px; right: 84px; top: 1410px; font-size: 40px; font-weight: 500; color: #5b6673; text-align: center; }
+</style>
+<div id="root" data-composition-id="bark" data-width="1080" data-height="1920">
+
+  <div id="bark-woof">멍! 멍!</div>
+  <div id="bark-wave"><span class="bar" id="bar0"></span><span class="bar" id="bar1"></span><span class="bar" id="bar2"></span><span class="bar" id="bar3"></span><span class="bar" id="bar4"></span><span class="bar" id="bar5"></span><span class="bar" id="bar6"></span><span class="bar" id="bar7"></span><span class="bar" id="bar8"></span><span class="bar" id="bar9"></span><span class="bar" id="bar10"></span><span class="bar" id="bar11"></span><span class="bar" id="bar12"></span><span class="bar" id="bar13"></span><span class="bar" id="bar14"></span><span class="bar" id="bar15"></span><span class="bar" id="bar16"></span><span class="bar" id="bar17"></span><span class="bar" id="bar18"></span><span class="bar" id="bar19"></span><span class="bar" id="bar20"></span></div>
+  <div id="bark-title" class="title"><span class="w">차가</span><span class="w">먼저</span><span class="w">알아듣고</span><span class="w accent">달래요</span></div>
+  <div id="bark-car" class="car"><div class="screen">
+    <video id="bark-vid" class="clip" src="assets/clips/car_calm.mp4" data-start="0" data-duration="6.4" data-media-start="0.8" muted playsinline></video>
+  </div></div>
+  <div id="bark-cap">보호자 목소리 · 차분한 조명 · 안정 음악</div>
+
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+
+  function words(sel, at, tl) {
+    document.querySelectorAll(sel + " .w").forEach((el, i) => {
+      tl.fromTo(el, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power4.out" }, at + i * 0.08);
+    });
+  }
+
+
+  const amp = [0.35,0.6,0.9,0.5,1,0.7,0.4,0.85,0.95,0.55,1,0.6,0.9,0.45,0.8,1,0.5,0.7,0.95,0.4,0.6];
+  document.querySelectorAll("#bark-wave .bar").forEach((b, i) => {
+    tl.fromTo(b, { scaleY: 0.06 }, { scaleY: amp[i], duration: 0.18, ease: "expo.out" }, 0.05 + i * 0.012);
+    tl.to(b, { scaleY: amp[(i + 7) % 21] * 0.8, duration: 0.2, ease: "power2.inOut" }, 0.45 + i * 0.01);
+    tl.to(b, { scaleY: amp[(i + 3) % 21], duration: 0.2, ease: "power2.inOut" }, 0.7 + i * 0.01);
+  });
+  tl.fromTo("#bark-woof", { opacity: 0, scale: 1.25, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, 0.05);
+  tl.to("#bark-woof", { opacity: 0, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 1.0);
+  tl.to("#bark-wave", { scaleY: 0.02, opacity: 0, duration: 0.3, ease: "power3.in" }, 1.0);
+  tl.fromTo("#bark-car", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: "expo.out" }, 1.15);
+  words("#bark-title", 1.35, tl);
+  tl.fromTo("#bark-cap", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.1);
+  tl.to("#bark-car, #bark-cap", { opacity: 0, y: -60, duration: 0.35, ease: "power3.in" }, 6.0);
+  tl.to("#bark-title", { opacity: 0, filter: "blur(8px)", duration: 0.2 }, 6.05);
+
+window.__timelines["bark"] = tl;
+</script>
+</template>

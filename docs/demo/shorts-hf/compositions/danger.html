@@ -1,0 +1,54 @@
+<template>
+<style>
+  @font-face { font-family: "SDGothic"; src: local("AppleSDGothicNeo-Medium"); font-weight: 500; }
+  @font-face { font-family: "SDGothic"; src: local("AppleSDGothicNeo-Heavy"); font-weight: 900; }
+  #root { position: absolute; inset: 0; font-family: "SDGothic"; color: #202833; overflow: hidden; }
+  .title { position: absolute; left: 80px; right: 80px; top: 300px; font-size: 92px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.18; }
+  .title .w { display: inline-block; margin-right: 0.22em; }
+  .kicker { position: absolute; left: 84px; top: 300px; font-size: 42px; font-weight: 500; color: #5b6673; }
+  .accent { color: #087db5; }
+  .phone { position: absolute; width: 540px; height: 1200px; left: 270px; border-radius: 70px; background: #111; padding: 18px;
+    box-shadow: 0 40px 80px rgba(16,24,40,.22); }
+  .phone .screen { position: relative; width: 100%; height: 100%; border-radius: 54px; overflow: hidden; background: #fff; }
+  .phone video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+  .car { position: absolute; left: 40px; width: 1000px; height: 760px; border-radius: 34px; background: #0f1115; padding: 14px;
+    box-shadow: 0 40px 80px rgba(16,24,40,.22); }
+  .car .screen { position: relative; width: 100%; height: 100%; border-radius: 22px; overflow: hidden; background: #fff; }
+  .car video { position: absolute; width: 1536px; height: 864px; left: -540px; top: -36px; }
+
+  #danger-ground { position: absolute; inset: 0; background: #fbe9e9; }
+  #danger-title { top: 300px; }
+  #danger-title .red { color: #d93636; }
+  #danger-car { top: 620px; }
+  #danger-cap { position: absolute; left: 84px; right: 84px; top: 1440px; font-size: 40px; font-weight: 500; color: #8a3b3b; text-align: center; }
+</style>
+<div id="root" data-composition-id="danger" data-width="1080" data-height="1920">
+
+  <div id="danger-ground"></div>
+  <div id="danger-title" class="title"><span class="w">너무</span><span class="w">더우면</span><span class="w red">긴급</span><span class="w red">알림</span></div>
+  <div id="danger-car" class="car"><div class="screen">
+    <video id="danger-vid" class="clip" src="assets/clips/car_danger.mp4" data-start="0" data-duration="4" data-media-start="1.2" muted playsinline></video>
+  </div></div>
+  <div id="danger-cap">반려견 적정 온도를 크게 넘거나 배터리가 부족하면</div>
+
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+
+  function words(sel, at, tl) {
+    document.querySelectorAll(sel + " .w").forEach((el, i) => {
+      tl.fromTo(el, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power4.out" }, at + i * 0.08);
+    });
+  }
+
+
+  tl.fromTo("#danger-ground", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 0);
+  tl.fromTo("#danger-car", { scale: 1.15, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "expo.out" }, 0.05);
+  words("#danger-title", 0.15, tl);
+  tl.fromTo("#danger-cap", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.9);
+  tl.to("#danger-ground", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 3.6);
+  tl.to("#danger-car, #danger-title, #danger-cap", { opacity: 0, duration: 0.3, ease: "power3.in" }, 3.65);
+
+window.__timelines["danger"] = tl;
+</script>
+</template>
