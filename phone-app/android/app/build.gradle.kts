@@ -8,12 +8,13 @@ if (file("google-services.json").exists()) apply(plugin = "com.google.gms.google
 
 android {
     namespace = "ai.petcare.drive.petcare_phone"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37 // flutter_local_notifications가 37 이상을 요구
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true // flutter_local_notifications가 요구
     }
 
     defaultConfig {
@@ -48,4 +49,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

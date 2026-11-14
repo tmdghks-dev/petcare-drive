@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'data.dart';
 import 'qr_scan_screen.dart';
+import 'services/car_alerts.dart';
 import 'services/firebase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FirebaseService.instance.init(); // 설정 파일이 없으면 오프라인으로 동작
+  await CarAlerts.instance.init(); // 짖음·위험 기록이 오면 휴대폰 알림
   runApp(const PetCareApp());
 }
 
@@ -93,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           IconButton(
             tooltip: '알림',
-            onPressed: () => showMessage('알림 화면은 준비 중이에요.'),
+            onPressed: showAlerts,
             icon: const Icon(Icons.notifications_none_rounded),
           ),
           const SizedBox(width: 8),
@@ -117,7 +119,7 @@ class _MainScreenState extends State<MainScreen> {
                   onTemperature: () => goTo(1),
                   onVoice: () => goTo(2),
                   onProfile: () => goTo(3),
-                  onAlarm: () => showMessage('아직 받은 알림이 없어요.'),
+                  onAlarm: showAlerts,
                   onQrConnect: openQrScanner,
                 ),
               ),
@@ -162,6 +164,26 @@ class _MainScreenState extends State<MainScreen> {
             label: '프로필',
           ),
         ],
+      ),
+    );
+  }
+
+  // 이번에 받은 짖음·진정·위험 알림 목록
+  void showAlerts() {
+    final list = CarAlerts.instance.received.value;
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: list.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.all(32),
+                child: Text('아직 받은 알림이 없어요.', textAlign: TextAlign.center),
+              )
+            : ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                children: [for (final a in list) ListTile(leading: const Icon(Icons.pets, color: blue), title: Text(a))],
+              ),
       ),
     );
   }

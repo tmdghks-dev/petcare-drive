@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 짖음·위험 알림 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- 차 QR 스캔 -->
     <uses-permission android:name="android.permission.CAMERA" />
     <application
