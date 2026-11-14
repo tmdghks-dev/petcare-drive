@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 import 'profiles.dart';
 import 'theme.dart';
+import 'services/firebase_service.dart';
 
-void main() => runApp(const PetCareApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseService.instance.init();
+  runApp(const PetCareApp());
+}
 
 class PetCareApp extends StatelessWidget {
   const PetCareApp({super.key});

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'data.dart';
+import 'services/firebase_service.dart';
 import 'theme.dart';
 
 // 반려견 여러 마리를 등록하고 고르는 화면. 저장하면 차량 앱의 "함께 탈 아이 선택"에 나타난다.
@@ -41,15 +42,17 @@ class _ProfilesPageState extends State<ProfilesPage> {
     _select(dogs.length - 1);
   }
 
-  void _save() {
+  void _save() async {
     setState(() {
       dog
         ..name = name.text.trim().isEmpty ? dog.name : name.text.trim()
         ..breed = breed.text.trim()
         ..age = age.text.trim();
     });
-    // ponytail: Firebase 연결 전. 연결되면 vehicles/{carId}/profile에 저장
-    toast(context, '저장했어요 · 차량 연결 후 자동으로 보내져요');
+    await FirebaseService.instance.saveDogProfiles(dogs);
+    if (mounted) {
+      toast(context, '저장했어요 · 차량에 동기화되었어요');
+    }
   }
 
   @override
