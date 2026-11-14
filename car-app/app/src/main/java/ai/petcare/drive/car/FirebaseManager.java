@@ -1,6 +1,8 @@
 package ai.petcare.drive.car;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,7 +21,9 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -35,6 +39,10 @@ public class FirebaseManager {
     private DatabaseReference carRef;
     private String carId = "car_01";
     private boolean initialized = false;
+    // DB는 로그인한 앱만 읽고 쓸 수 있다. 로그인 전에 붙인 리스너는 거부되므로 로그인 뒤에 붙인다
+    private boolean signedIn = false;
+    private final List<Runnable> afterSignIn = new ArrayList<>();
+    private final Handler main = new Handler(Looper.getMainLooper());
 
     public interface OnCommandListener {
         void onCommandReceived(String type, String voiceUrl, Map<String, Object> params);
@@ -68,30 +76,48 @@ public class FirebaseManager {
             storage = FirebaseStorage.getInstance();
             carRef = database.getReference("vehicles").child(this.carId);
 
-            // 익명 로그인을 통해 Firebase 접근 권한 확보
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            if (auth.getCurrentUser() == null) {
-                auth.signInAnonymously().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "Firebase anonymous auth successful");
-                    } else {
-                        Log.w(TAG, "Firebase auth failed", task.getException());
-                    }
-                });
-            }
-
             initialized = true;
+            signIn();
             Log.d(TAG, "FirebaseManager initialized for vehicle: " + this.carId);
         } catch (Exception e) {
             Log.e(TAG, "Firebase initialization error (google-services.json check required)", e);
         }
     }
 
+    // 익명 로그인. 막 켜져 네트워크가 없으면 5초 뒤 다시 시도한다
+    private void signIn() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            onSignedIn();
+            return;
+        }
+        auth.signInAnonymously().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d(TAG, "Firebase anonymous auth successful");
+                onSignedIn();
+            } else {
+                Log.w(TAG, "Firebase auth failed, retry in 5s", task.getException());
+                main.postDelayed(this::signIn, 5000);
+            }
+        });
+    }
+
+    private void onSignedIn() {
+        signedIn = true;
+        for (Runnable r : afterSignIn) r.run();
+        afterSignIn.clear();
+    }
+
+    private void whenSignedIn(Runnable r) {
+        if (signedIn) r.run();
+        else afterSignIn.add(r);
+    }
+
     /**
      * 차량 상태 업로드 (C-09, S-02)
      */
     public void uploadCarStatus(float tempC, int soc, float batteryWh, String state) {
-        if (!initialized || carRef == null) return;
+        if (!initialized || carRef == null || !signedIn) return;
         Map<String, Object> status = new HashMap<>();
         if (!Float.isNaN(tempC)) status.put("temp", tempC);   // 모르면 올리지 않는다
         if (soc >= 0) status.put("battery", soc);
@@ -172,7 +198,7 @@ public class FirebaseManager {
     public void listenForCommands(final OnCommandListener listener) {
         if (!initialized || carRef == null) return;
 
-        carRef.child("commands").limitToLast(1).addValueEventListener(new ValueEventListener() {
+        whenSignedIn(() -> carRef.child("commands").limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot child : snapshot.getChildren()) {
@@ -196,7 +222,7 @@ public class FirebaseManager {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Command listener cancelled", error.toException());
             }
-        });
+        }));
     }
 
     /**
@@ -204,7 +230,7 @@ public class FirebaseManager {
      */
     public void listenForPairing(final Runnable onPaired) {
         if (!initialized || carRef == null) return;
-        carRef.child("info").child("pairedAt").addValueEventListener(new ValueEventListener() {
+        whenSignedIn(() -> carRef.child("info").child("pairedAt").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) onPaired.run();
@@ -214,7 +240,7 @@ public class FirebaseManager {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Pairing listener cancelled", error.toException());
             }
-        });
+        }));
     }
 
     /**
@@ -223,7 +249,7 @@ public class FirebaseManager {
     public void listenForProfiles(final OnProfilesListener listener) {
         if (!initialized || carRef == null) return;
 
-        carRef.child("profiles").addValueEventListener(new ValueEventListener() {
+        whenSignedIn(() -> carRef.child("profiles").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (listener != null) {
@@ -235,7 +261,7 @@ public class FirebaseManager {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Profiles listener cancelled", error.toException());
             }
-        });
+        }));
     }
 
     /**
